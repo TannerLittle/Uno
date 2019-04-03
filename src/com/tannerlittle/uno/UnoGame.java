@@ -1,53 +1,81 @@
 package com.tannerlittle.uno;
 
-import com.tannerlittle.uno.enums.GameState;
-import com.tannerlittle.uno.enums.Rank;
-import com.tannerlittle.uno.enums.Rotation;
-import com.tannerlittle.uno.enums.Suit;
+import com.tannerlittle.uno.enums.*;
 import com.tannerlittle.uno.model.Card;
 import com.tannerlittle.uno.model.Deck;
 import com.tannerlittle.uno.model.Discards;
 import com.tannerlittle.uno.model.Player;
+import com.tannerlittle.uno.network.UnoClient;
+import com.tannerlittle.uno.view.ColorFrame;
+import com.tannerlittle.uno.view.GameFrame;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public class UnoGame {
 
-    private GameThread thread;
+    private UnoClient client;
+    private UUID player;
+
     private GameState state;
 
-    private List<Player> players;
+    private Map<UUID, Player> players;
+
+    private List<UUID> cycle;
+    private int active;
+
+    private UUID host;
+
+    private GameFrame frame;
 
     private Rotation rotation;
-
-    private int dealer;
-    private int active;
 
     private Deck deck;
     private Discards discards;
 
-    public UnoGame(List<Player> players) {
-        this.thread = new GameThread(this);
+    public UnoGame() {
+        this(null, null);
+    }
 
-        this.state = GameState.RUNNING;
+    public UnoGame(UnoClient client, String name) {
+        this.client = client;
 
-        this.players = new LinkedList<>();
-        this.players.addAll(players);
+        this.state = GameState.SETUP;
+
+        this.players = new HashMap<>();
+
+        this.cycle = new LinkedList<>();
+        this.active = 0;
 
         this.rotation = Rotation.CLOCKWISE;
-
-        this.dealer = 0;
-        this.active = (players.size() > 1 ? 1 : 0);
 
         this.deck = new Deck();
         this.discards = new Discards();
 
-        this.initialize();
+        if (!(name == null)) {
+            Player player = new Player(UUID.randomUUID(), name);
+
+            this.player = player.getUniqueId();
+            this.addPlayer(player);
+        }
     }
 
-    private void initialize() {
-        for (Player player : players) {
+    public void addPlayer(Player player) {
+        this.players.put(player.getUniqueId(), player);
+        this.cycle.add(player.getUniqueId());
+
+        // First player to join is the host
+        if (host == null) {
+            this.host = player.getUniqueId();
+        }
+
+        // Second player to join is active
+        if ((active == 0) && (cycle.size() > 1)) {
+            this.active = 1;
+        }
+    }
+
+    public void deal() {
+        for (Player player : players.values()) {
             for (int i = 0; i < 7; i++) {
                 Card card = deck.pop();
                 player.getHand().push(card);
@@ -56,24 +84,45 @@ public class UnoGame {
 
         Card card = deck.pop();
         this.discards.push(card);
+    }
 
-        this.thread.start();
+    public void start() {
+        this.state = GameState.RUNNING;
+        this.frame = new GameFrame(this);
+    }
+
+    public UnoClient getClient() {
+        return client;
+    }
+
+    public Player getPlayer() {
+        return players.get(player);
+    }
+
+    public boolean isPlayer(UUID id) {
+        if (player == null) return false;
+
+        return player.equals(id);
     }
 
     public GameState getState() {
         return state;
     }
 
+    public int getActive() {
+        return active;
+    }
+
+    public UUID getHost() {
+        return host;
+    }
+
+    public GameFrame getFrame() {
+        return frame;
+    }
+
     public Rotation getRotation() {
         return rotation;
-    }
-
-    public Player getDealer() {
-        return this.players.get(dealer);
-    }
-
-    public Player getActive() {
-        return this.players.get(active);
     }
 
     public Deck getDeck() {
@@ -84,18 +133,36 @@ public class UnoGame {
         return discards;
     }
 
+    public Player getActivePlayer() {
+        UUID id = cycle.get(active);
+        return players.get(id);
+    }
+
+    public Collection<Player> getPlayers() {
+        return players.values();
+    }
+
+    public Player getPlayer(UUID id) {
+        return players.get(id);
+    }
+
     public boolean playCard(Player player, Card card) {
-        if (!(player.equals(getActive()))) {
-            player.sendMessage("It is not your turn to go!");
+        if (!(player.equals(getActivePlayer()))) {
+            if (isPlayer(player.getUniqueId())) player.sendMessage(Message.ERROR_NOT_ACTIVE.getMessage());
+            return false;
+        }
+
+        if (state.equals(GameState.WILD)) {
+            if (isPlayer(player.getUniqueId())) player.sendMessage(Message.ERROR_WILD.getMessage());
             return false;
         }
 
         if (!(checkCard(card))) {
-            player.sendMessage("You cannot play that card.");
+            if (isPlayer(player.getUniqueId())) player.sendMessage(Message.ERROR_INVALID_CARD.getMessage());
             return false;
         }
 
-        player.getHand().remove(card);
+        player.getHand().removeElement(card);
 
         this.discards.push(card);
 
@@ -113,19 +180,31 @@ public class UnoGame {
                 this.rotate();
                 break;
             case DRAW_TWO:
-                this.pickupCards(2);
+                int i = 1;
+                while ((discards.size() >= i) && (discards.get(discards.size() - i).getRank() == Rank.DRAW_TWO)) i++;
+
+                this.pickupCards((i - 1) * 2);
                 break;
             case WILD_DRAW_FOUR:
-                this.pickupCards(4);
+                int j = 1;
+                while ((discards.size() >= j) && (discards.get(discards.size() - j).getRank() == Rank.WILD_DRAW_FOUR)) j++;
+
+                this.pickupCards((j - 1) * 4);
                 break;
             default:
                 break;
         }
 
         if (player.getHand().size() == 0) {
-            //TODO:
-            System.out.println(player.getName() + " Wins!");
+            for (Player p : players.values()) p.sendMessage(Message.SUCCESS_WIN.getMessage(player.getName()));
             System.exit(0);
+        }
+
+        if (isPlayer(player.getUniqueId())) {
+            if (card.getSuit() == Suit.WILD) {
+                ColorFrame color = new ColorFrame(frame, this);
+                color.setVisible(true);
+            }
         }
 
         this.rotate();
@@ -133,13 +212,17 @@ public class UnoGame {
     }
 
     public boolean setWild(Player player, Suit suit) {
-        if (!(player.equals(getActive()))) {
-            player.sendMessage("It is not your turn to go!");
+        if (!(player.equals(getActivePlayer()))) {
+            if (isPlayer(player.getUniqueId())) player.sendMessage(Message.ERROR_NOT_ACTIVE.getMessage());
+            return false;
+        }
+
+        if (!(state.equals(GameState.WILD))) {
+            if (isPlayer(player.getUniqueId())) player.sendMessage(Message.ERROR_NOT_WILD.getMessage());
             return false;
         }
 
         if (suit.equals(Suit.WILD)) {
-            player.sendMessage("You cannot choose that suit!");
             return false;
         }
 
@@ -150,31 +233,32 @@ public class UnoGame {
     }
 
     public boolean pickupCard(Player player) {
-        if (!(player.equals(getActive()))) {
-            player.sendMessage("It is not your turn to go!");
+        if (!(player.equals(getActivePlayer()))) {
+            if (isPlayer(player.getUniqueId())) player.sendMessage("It is not your turn to go!");
+            return false;
+        }
+
+        if (state.equals(GameState.WILD)) {
             return false;
         }
 
         for (Card card : player.getHand()) {
             if (checkCard(card)) {
-                player.sendMessage("You cannot pickup because you can");
-                player.sendMessage("play your " + card.getSuit() + " " + card.getRank() + "!");
+                if (isPlayer(player.getUniqueId())) player.sendMessage("You cannot pickup because you can play your " + card.toString());
                 return false;
             }
         }
 
-        player.getHand().push(discards.pop());
+        Card card = deck.pop();
+
+        player.getHand().push(card);
 
         this.rotate();
         return true;
     }
 
     private void pickupCards(int cards) {
-        int index = (rotation.equals(Rotation.CLOCKWISE)) ?
-                (active == players.size() - 1 ? 0 : active + 1):
-                (active == 0 ? players.size() - 1 : active - 1);
-
-        Player player = players.get(index);
+        Player player = this.getNextPlayer();
 
         for (int i = 0; i < cards; i++) {
             player.getHand().push(deck.pop());
@@ -196,13 +280,30 @@ public class UnoGame {
     private void rotate() {
         switch (rotation) {
             case CLOCKWISE:
-                this.active = (active == players.size() - 1 ? 0 : active + 1);
+                this.active = (active == cycle.size() - 1 ? 0 : active + 1);
                 break;
             case COUNTER_CLOCKWISE:
-                this.active = (active == 0 ? players.size() - 1 : active - 1);
+                this.active = (active == 0 ? cycle.size() - 1 : active - 1);
                 break;
             default:
                 break;
         }
+    }
+
+    private Player getNextPlayer() {
+        UUID id;
+
+        switch (rotation) {
+            case CLOCKWISE:
+                id = cycle.get(active == cycle.size() - 1 ? 0 : active + 2);
+                break;
+            case COUNTER_CLOCKWISE:
+                id = cycle.get(active == 0 ? cycle.size() - 2 : active - 2);
+                break;
+            default:
+                return null;
+        }
+
+        return players.get(id);
     }
 }

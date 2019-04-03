@@ -24,4 +24,24 @@ public class Card {
     public Rank getRank() {
         return rank;
     }
+
+    public String toString() {
+        return suit.name() + " " + rank.name();
+    }
+
+    public static Card parse(String str) {
+        String[] parsed = str.split(" ");
+        Suit suit = Suit.valueOf(parsed[0]);
+        Rank rank = Rank.valueOf(parsed[1]);
+
+        return new Card(suit, rank);
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (!(object instanceof Card)) return false;
+
+        Card card = (Card) object;
+        return card.getSuit().equals(suit) && card.getRank().equals(rank);
+    }
 }

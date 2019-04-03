@@ -1,15 +1,23 @@
 package com.tannerlittle.uno.model;
 
+import javax.swing.*;
+import java.util.UUID;
+
 public class Player {
 
+    private UUID id;
     private String name;
 
     private Hand hand;
 
-    public Player(String name) {
+    public Player(UUID id, String name) {
+        this.id = id;
         this.name = name;
-
         this.hand = new Hand();
+    }
+
+    public UUID getUniqueId() {
+        return id;
     }
 
     public String getName() {
@@ -20,8 +28,11 @@ public class Player {
         return hand;
     }
 
+    public String getCommand() {
+        return "PLAYER " + id + " " + name;
+    }
+
     public void sendMessage(String message) {
-        //TODO:
-        System.out.println(message);
+        JOptionPane.showMessageDialog(null, message);
     }
 }

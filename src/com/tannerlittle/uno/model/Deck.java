@@ -6,7 +6,7 @@ import com.tannerlittle.uno.enums.Suit;
 import java.util.Collections;
 import java.util.Stack;
 
-public class Deck extends Stack<Card> {
+public class Deck extends CardStack {
 
     public Deck() {
         for (Suit suit : Suit.values()) {

@@ -1,40 +1,84 @@
 package com.tannerlittle.uno;
 
-import com.tannerlittle.uno.enums.GameState;
-import com.tannerlittle.uno.model.Card;
-import com.tannerlittle.uno.model.Deck;
 import com.tannerlittle.uno.model.Player;
+import com.tannerlittle.uno.network.UnoClient;
+import com.tannerlittle.uno.network.UnoServer;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import java.io.IOException;
+import java.net.InetAddress;
 import java.util.Scanner;
+import java.util.UUID;
 
 public class Main {
 
-    public static void main(String[] args) {
-        // Local CLI Uno for Testing
+    private UnoGame game;
 
+    private UnoServer server;
+    private UnoClient client;
+
+    public Main() {
         Scanner scanner = new Scanner(System.in);
 
-        System.out.println("How many players are in this game?");
-        int count = scanner.nextInt();
+        System.out.println("Host new Uno Server [true|false]: ");
+        boolean host = scanner.nextBoolean();
 
-        if (count <= 0) {
-            System.out.println("You must have at least one player.");
-            System.exit(0);
+        if (host) {
+            try {
+                this.server = new UnoServer(null);
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+
+            if (server == null) {
+                System.out.println("Unable to establish a socket connection.");
+                System.exit(0);
+            }
+
+            System.out.println(server.getSocketAddress().getHostAddress());
+            System.out.println(server.getPort());
+
+            try {
+                this.client = new UnoClient(InetAddress.getByName("0.0.0.0"), server.getPort());
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
         }
 
-        List<Player> players = new LinkedList<>();
+        if (client == null) {
+            System.out.println("Server Address: ");
+            String address = scanner.next();
 
-        for (int i = 0; i < count; i++) {
-            System.out.println("Player #" + (i+1) + "'s name: ");
-            String name = scanner.next();
+            System.out.println("Server Port: ");
+            int port = scanner.nextInt();
 
-            Player player = new Player(name);
-            players.add(player);
+            try {
+                this.client = new UnoClient(InetAddress.getByName(address), port);
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
         }
 
-        UnoGame game = new UnoGame(players);
+        System.out.println("Player Name: ");
+        String name = scanner.next();
+
+        this.game = new UnoGame(client, name);
+
+        this.client.getThread().setGame(game);
+        this.client.sendCommand(game.getPlayer().getCommand());
+
+        if (host) {
+            System.out.println("Press ENTER to start the game.");
+            scanner.next();
+
+            this.client.sendCommand("START");
+        }
+    }
+
+    public UnoGame getGame() {
+        return game;
+    }
+
+    public static void main(String[] args) {
+        new Main();
     }
 }
