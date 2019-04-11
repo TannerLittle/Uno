@@ -9,6 +9,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class PlayersPanel extends JPanel {
 
@@ -27,7 +30,9 @@ public class PlayersPanel extends JPanel {
     private void initialize() {
         this.setLayout(new FlowLayout(FlowLayout.LEFT));
 
-        for (Player player : game.getPlayers()) {
+        List<Player> players = game.getPlayers().stream().sorted(Comparator.comparing(Player::getName)).collect(Collectors.toList());
+
+        for (Player player : players) {
             JPanel panel = new JPanel();
             panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
             panel.setBorder(null);

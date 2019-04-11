@@ -76,6 +76,7 @@ public class GameFrame extends JFrame {
     public void update(boolean pack) {
         if (!(scroll == null)) this.getContentPane().remove(scroll);
         if (!(deck == null)) this.getContentPane().remove(deck);
+        if (!(players == null)) this.top.remove(players);
 
         this.hand = new HandPanel(this, client, game);
         this.scroll = new JScrollPane(hand);

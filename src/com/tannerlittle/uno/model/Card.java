@@ -30,7 +30,7 @@ public class Card {
     }
 
     public boolean isSimilar(Card card) {
-        return (suit.equals(card.getSuit()) || rank.equals(card.getRank()));
+        return (suit.equals(card.getSuit()) || rank.equals(card.getRank()) || card.getSuit().equals(Suit.WILD));
     }
 
     public static Card parse(String str) {

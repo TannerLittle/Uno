@@ -172,6 +172,11 @@ public class UnoGame {
             return null;
         }
 
+        if (!(rank == null)) {
+            if (isPlayer(player.getUniqueId())) player.sendMessage("You cannot pick because you've already played!");
+            return null;
+        }
+
         for (Card card : player.getHand()) {
             if (checkCard(card)) {
                 if (isPlayer(player.getUniqueId())) player.sendMessage("You cannot pickup because you can play your " + card.toString());
