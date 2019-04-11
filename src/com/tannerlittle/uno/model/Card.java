@@ -29,6 +29,10 @@ public class Card {
         return suit.name() + " " + rank.name();
     }
 
+    public boolean isSimilar(Card card) {
+        return (suit.equals(card.getSuit()) || rank.equals(card.getRank()));
+    }
+
     public static Card parse(String str) {
         String[] parsed = str.split(" ");
         Suit suit = Suit.valueOf(parsed[0]);

@@ -26,7 +26,7 @@ public enum Message {
 
         int index = 0;
         for (String arg : args) {
-            message.replace(String.format("{%d}", ++index), arg);
+            message = message.replace(String.format("{%d}", ++index), arg);
         }
 
         return message;

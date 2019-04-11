@@ -4,7 +4,6 @@ import com.tannerlittle.uno.enums.Rank;
 import com.tannerlittle.uno.enums.Suit;
 
 import java.util.Collections;
-import java.util.Stack;
 
 public class Deck extends CardStack {
 

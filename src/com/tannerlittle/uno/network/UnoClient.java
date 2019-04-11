@@ -2,7 +2,7 @@ package com.tannerlittle.uno.network;
 
 import com.tannerlittle.uno.UnoGame;
 
-import  java.io.IOException;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
@@ -15,10 +15,10 @@ public class UnoClient {
     private Socket socket;
     private ListenerThread thread;
 
-    public UnoClient(InetAddress address, int port) throws IOException {
+    public UnoClient(UnoGame game, InetAddress address, int port) throws IOException {
         this.socket = new Socket(address, port);
 
-        this.thread = new ServerListenerThread(socket,this);
+        this.thread = new ServerListenerThread(socket, this, game);
         this.thread.start();
     }
 
@@ -34,9 +34,5 @@ public class UnoClient {
 
         out.println(command);
         out.flush();
-    }
-
-    public ListenerThread getThread() {
-        return thread;
     }
 }

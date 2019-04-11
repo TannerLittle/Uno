@@ -18,10 +18,12 @@ public class ColorFrame extends JFrame {
     private final Border focused = BorderFactory.createEtchedBorder(JPanel.WHEN_FOCUSED, Color.BLACK, Color.GRAY);
 
     private GameFrame frame;
+    private UnoClient client;
     private UnoGame game;
 
-    public ColorFrame(GameFrame frame, UnoGame game) {
+    public ColorFrame(GameFrame frame, UnoClient client, UnoGame game) {
         this.frame = frame;
+        this.client = client;
         this.game = game;
 
         this.initialize();
@@ -53,7 +55,6 @@ public class ColorFrame extends JFrame {
 
                 @Override
                 public void mouseClicked(MouseEvent event) {
-                    UnoClient client = game.getClient();
                     Player player = game.getPlayer();
 
                     client.sendCommand("WILD " + player.getUniqueId() + " " + suit.name());

@@ -11,10 +11,12 @@ import java.awt.event.MouseEvent;
 public class DeckPanel extends JPanel {
 
     private GameFrame frame;
+    private UnoClient client;
     private UnoGame game;
 
-    public DeckPanel(GameFrame frame, UnoGame game) {
+    public DeckPanel(GameFrame frame, UnoClient client, UnoGame game) {
         this.frame = frame;
+        this.client = client;
         this.game = game;
 
         this.initialize();
@@ -24,12 +26,11 @@ public class DeckPanel extends JPanel {
         CardPanel card = new CardPanel(game.getDiscards().peek());
         this.add(card);
 
-        HiddenCardPanel hidden = new HiddenCardPanel();
+        HiddenCardPanel hidden = new HiddenCardPanel(100, 150, "Uno");
 
         hidden.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                UnoClient client = game.getClient();
                 Player player = game.getPlayer();
 
                 client.sendCommand("PICKUP " + player.getUniqueId());

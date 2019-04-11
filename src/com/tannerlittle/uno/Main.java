@@ -3,7 +3,11 @@ package com.tannerlittle.uno;
 import com.tannerlittle.uno.model.Player;
 import com.tannerlittle.uno.network.UnoClient;
 import com.tannerlittle.uno.network.UnoServer;
+import com.tannerlittle.uno.view.GameFrame;
 
+import javax.swing.*;
+import java.awt.*;
+import java.io.Console;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.util.Scanner;
@@ -16,8 +20,23 @@ public class Main {
     private UnoServer server;
     private UnoClient client;
 
+    public static GameFrame frame;
+
     public Main() {
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
         Scanner scanner = new Scanner(System.in);
+
+        System.out.println("Player Name: ");
+        String name = scanner.next();
+
+        Player player = new Player(UUID.randomUUID(), name);
+
+        this.game = new UnoGame(player);
 
         System.out.println("Host new Uno Server [true|false]: ");
         boolean host = scanner.nextBoolean();
@@ -38,32 +57,31 @@ public class Main {
             System.out.println(server.getPort());
 
             try {
-                this.client = new UnoClient(InetAddress.getByName("0.0.0.0"), server.getPort());
+                InetAddress address = InetAddress.getByName("0.0.0.0");
+                int port = server.getPort();
+
+                this.client = new UnoClient(game, address, port);
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
         }
 
         if (client == null) {
-            System.out.println("Server Address: ");
-            String address = scanner.next();
-
-            System.out.println("Server Port: ");
-            int port = scanner.nextInt();
-
             try {
-                this.client = new UnoClient(InetAddress.getByName(address), port);
+                System.out.println("Server Address: ");
+                InetAddress address = InetAddress.getByName(scanner.next());
+
+                System.out.println("Server Port: ");
+                int port = scanner.nextInt();
+
+                this.client = new UnoClient(game, address, port);
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
         }
 
-        System.out.println("Player Name: ");
-        String name = scanner.next();
+        Main.frame = new GameFrame(client, game);
 
-        this.game = new UnoGame(client, name);
-
-        this.client.getThread().setGame(game);
         this.client.sendCommand(game.getPlayer().getCommand());
 
         if (host) {
@@ -72,10 +90,6 @@ public class Main {
 
             this.client.sendCommand("START");
         }
-    }
-
-    public UnoGame getGame() {
-        return game;
     }
 
     public static void main(String[] args) {

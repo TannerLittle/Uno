@@ -13,7 +13,6 @@ import java.util.UUID;
 public abstract class ListenerThread extends Thread {
 
     private Socket socket;
-    private UnoGame game;
 
     public ListenerThread(Socket socket) {
         this.socket = socket;
@@ -36,16 +35,6 @@ public abstract class ListenerThread extends Thread {
         BufferedReader reader = new BufferedReader(new InputStreamReader(input));
 
         while (true) {
-            if (game == null) {
-                try {
-                    sleep(100);
-                } catch (InterruptedException ex) {
-                    ex.printStackTrace();
-                }
-
-                continue;
-            }
-
             String line;
 
             try {
@@ -63,52 +52,6 @@ public abstract class ListenerThread extends Thread {
             String command = line.split("\\s+")[0];
             String content = (line.length() >= command.length() + 1) ? line.substring(command.length() + 1) : line;
 
-            // Game play commands
-
-            if (command.equals("PLAYER")) {
-                String[] args = content.split("\\s+");
-                UUID id = UUID.fromString(args[0]);
-                String name = args[1];
-
-                Player player = new Player(id, name);
-                this.game.addPlayer(player);
-            }
-
-            if (command.equals("PLAY")) {
-                String[] args = content.split("\\s+");
-
-                UUID id = UUID.fromString(args[0]);
-                Suit suit = Suit.valueOf(args[1]);
-                Rank rank = Rank.valueOf(args[2]);
-
-                Player player = game.getPlayer(id);
-                Card card = new Card(suit, rank);
-
-                this.game.playCard(player, card);
-            }
-
-            if (command.equals("PICKUP")) {
-                String[] args = content.split("\\s+");
-
-                UUID id = UUID.fromString(args[0]);
-
-                Player player = game.getPlayer(id);
-
-                this.game.pickupCard(player);
-            }
-
-            if (command.equals("WILD")) {
-                String[] args = content.split("\\s+");
-
-                UUID id = UUID.fromString(args[0]);
-                Suit suit = Suit.valueOf(args[1]);
-
-                Player player = game.getPlayer(id);
-
-                this.game.setWild(player, suit);
-            }
-
-            // Command pass-through
             this.onCommand(line, command, content);
         }
     }
@@ -129,14 +72,6 @@ public abstract class ListenerThread extends Thread {
 
     public Socket getSocket() {
         return socket;
-    }
-
-    public UnoGame getGame() {
-        return game;
-    }
-
-    public void setGame(UnoGame game) {
-        this.game = game;
     }
 
     public abstract void onCommand(String input, String command, String content);

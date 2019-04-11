@@ -13,10 +13,12 @@ import java.awt.event.MouseEvent;
 public class HandPanel extends JPanel {
 
     private GameFrame frame;
+    private UnoClient client;
     private UnoGame game;
 
-    public HandPanel(GameFrame frame, UnoGame game) {
+    public HandPanel(GameFrame frame, UnoClient client, UnoGame game) {
         this.frame = frame;
+        this.client = client;
         this.game = game;
 
         this.initialize();
@@ -31,7 +33,6 @@ public class HandPanel extends JPanel {
             panel.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
-                    UnoClient client = game.getClient();
                     Player player = game.getPlayer();
 
                     client.sendCommand("PLAY " + player.getUniqueId() + " " + card.toString());
