@@ -13,12 +13,14 @@ import java.awt.geom.AffineTransform;
 public class CardPanel extends JPanel {
 
     private final Card card;
+    private final boolean faded;
 
     private final Border border = BorderFactory.createEtchedBorder(WHEN_FOCUSED, Color.WHITE, Color.GRAY);
     private final Border focused = BorderFactory.createEtchedBorder(WHEN_FOCUSED, Color.BLACK, Color.GRAY);
 
-    public CardPanel(Card card) {
+    public CardPanel(Card card, boolean faded) {
         this.card = card;
+        this.faded = faded;
 
         this.setPreferredSize(new Dimension(100,150));
         this.setBorder(border);
@@ -43,22 +45,22 @@ public class CardPanel extends JPanel {
         int width = 100;
         int height = 150;
 
-        g2.setColor(Color.WHITE);
+        g2.setColor(faded ? Color.GRAY : Color.WHITE);
         g2.fillRect(0, 0, width, height);
 
         int margin = 5;
-        g2.setColor(card.getSuit().getColor());
+        g2.setColor(faded ? card.getSuit().getFaded() : card.getSuit().getColor());
         g2.fillRect(margin, margin, width-2*margin, height-2*margin);
 
         AffineTransform org = g2.getTransform();
 
-        g2.setColor(card.getSuit().getColor());
+        g2.setColor(faded ? card.getSuit().getFaded() : card.getSuit().getColor());
         g2.rotate(0.5, (width / 8 * 7), height);
 
         g2.fillOval(-(width / 5), height / 4, (width / 5 * 4), (height / 12 * 11));
         g2.setTransform(org);
 
-        g2.setColor(Color.WHITE);
+        g2.setColor(faded ? Color.GRAY : Color.WHITE);
         g2.setStroke(new BasicStroke(4));
         g2.rotate(0.5, (width / 8 * 7), height);
 
@@ -70,7 +72,7 @@ public class CardPanel extends JPanel {
         this.drawTextShadow(g2, Font.BOLD, -(width / 4), (width - 20), (height - 20));
     }
 
-    private void drawTextShadow(Graphics graphics, int style, int size, int x, int y) {
+    public void drawTextShadow(Graphics graphics, int style, int size, int x, int y) {
         Font font = new Font("Helvetica", style, size);
         Graphics2D g2 = (Graphics2D) graphics;
 
@@ -82,7 +84,7 @@ public class CardPanel extends JPanel {
         g2.setPaint(Color.BLACK);
         layout.draw(g2, x - 3, y + 3);
 
-        g2.setPaint(Color.WHITE);
+        g2.setPaint(faded ? Color.GRAY : Color.WHITE);
         layout.draw(g2, x, y);
     }
 }

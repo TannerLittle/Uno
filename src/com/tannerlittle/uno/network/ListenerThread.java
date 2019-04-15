@@ -1,14 +1,7 @@
 package com.tannerlittle.uno.network;
 
-import com.tannerlittle.uno.UnoGame;
-import com.tannerlittle.uno.enums.Rank;
-import com.tannerlittle.uno.enums.Suit;
-import com.tannerlittle.uno.model.Card;
-import com.tannerlittle.uno.model.Player;
-
 import java.io.*;
 import java.net.Socket;
-import java.util.UUID;
 
 public abstract class ListenerThread extends Thread {
 
@@ -45,9 +38,6 @@ public abstract class ListenerThread extends Thread {
             }
 
             if (line == null) continue;
-
-            if (this instanceof ClientListenerThread) System.out.println("Client => " + line);
-            if (this instanceof ServerListenerThread) System.out.println("Server => " + line);
 
             String command = line.split("\\s+")[0];
             String content = (line.length() >= command.length() + 1) ? line.substring(command.length() + 1) : line;

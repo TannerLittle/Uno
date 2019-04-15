@@ -3,19 +3,12 @@ package com.tannerlittle.uno.network;
 import com.tannerlittle.uno.Main;
 import com.tannerlittle.uno.UnoGame;
 import com.tannerlittle.uno.enums.Rank;
-import com.tannerlittle.uno.enums.Rotation;
 import com.tannerlittle.uno.enums.Suit;
 import com.tannerlittle.uno.model.Card;
 import com.tannerlittle.uno.model.Player;
 import com.tannerlittle.uno.view.ColorFrame;
-import com.tannerlittle.uno.view.GameFrame;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.Socket;
-import java.net.SocketException;
 import java.util.UUID;
 
 // Runs on Uno Clients
@@ -61,9 +54,13 @@ public class ServerListenerThread extends ListenerThread {
 
             Player player = new Player(id, name);
             this.game.addPlayer(player);
+
+            System.out.println("Player " + name + " has joined the server (" + id + ").");
         }
 
         if (command.equals("PLAY")) {
+            boolean rotate = true;
+
             String[] args = content.split("\\s+");
 
             UUID id = UUID.fromString(args[0]);
@@ -83,6 +80,7 @@ public class ServerListenerThread extends ListenerThread {
                         break;
                     case SKIP:
                         this.sendCommand("SKIP " + player.getUniqueId());
+                        rotate = false;
                         break;
                     case DRAW_TWO:
                         this.sendCommand("DRAW 2");
@@ -93,11 +91,17 @@ public class ServerListenerThread extends ListenerThread {
                     default:
                         break;
                 }
-            }
 
-            if ((game.isPlayer(id)) && (card.getSuit() == Suit.WILD)) {
-                ColorFrame color = new ColorFrame(Main.frame, client, game);
-                color.setVisible(true);
+                if (card.getSuit() == Suit.WILD) {
+                    ColorFrame color = new ColorFrame(Main.frame, client, game);
+                    color.setVisible(true);
+                } else {
+                    for (Card hand : player.getHand()) {
+                        if (hand.getRank().equals(card.getRank())) rotate = false;
+                    }
+
+                    if (rotate) this.sendCommand("ROTATE " + player.getUniqueId());
+                }
             }
         }
 
@@ -113,7 +117,7 @@ public class ServerListenerThread extends ListenerThread {
 
             Card discard = game.getDiscards().peek();
 
-            if (!(card.isSimilar(discard))) {
+            if (!((card.isSimilar(discard)) || (card.getSuit().equals(Suit.WILD)))) {
                 this.sendCommand("ROTATE " + player.getUniqueId());
             }
         }
@@ -127,6 +131,7 @@ public class ServerListenerThread extends ListenerThread {
             Player player = game.getPlayer(id);
 
             this.game.setWild(player, suit);
+            this.sendCommand("ROTATE " + player.getUniqueId());
         }
 
         if (command.equals("ACTIVE")) {

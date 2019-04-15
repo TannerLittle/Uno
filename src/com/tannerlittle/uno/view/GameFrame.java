@@ -26,10 +26,6 @@ public class GameFrame extends JFrame {
         this.client = client;
         this.game = game;
 
-        this.initialize();
-    }
-
-    private void initialize() {
         int width = 500;
         int height = 400;
 
@@ -37,14 +33,11 @@ public class GameFrame extends JFrame {
 
         this.setTitle("Uno | Player: " + game.getPlayer().getName());
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-        this.top = new JPanel(new BorderLayout());
-        this.getContentPane().add(top, BorderLayout.NORTH);
-
-        this.addButtons();
     }
 
     private void addButtons() {
+        this.buttons.clear();
+
         JButton end = new JButton("End Turn");
         end.addActionListener(event -> {
             this.client.sendCommand("ROTATE " + game.getPlayer().getUniqueId());
@@ -56,27 +49,31 @@ public class GameFrame extends JFrame {
             this.client.sendCommand("UNO " + game.getPlayer().getUniqueId());
         });
 
-        this.buttons.add(end);
-        //this.buttons.add(uno); TODO:
-
         JPanel group = new JPanel();
         group.setLayout(new BoxLayout(group, BoxLayout.Y_AXIS));
-
-        for (JButton button : buttons) {
-            group.add(button, BorderLayout.EAST);
-        }
 
         JPanel panel = new JPanel();
         panel.setLayout(new FlowLayout(FlowLayout.RIGHT));
         panel.add(group);
 
         this.top.add(panel, BorderLayout.EAST);
+
+        this.buttons.add(end);
+
+        for (JButton button : buttons) {
+            if ((game.isActive()) && (game.getRank() != null)) {
+                group.add(button, BorderLayout.EAST);
+            }
+        }
     }
 
     public void update(boolean pack) {
-        if (!(scroll == null)) this.getContentPane().remove(scroll);
-        if (!(deck == null)) this.getContentPane().remove(deck);
-        if (!(players == null)) this.top.remove(players);
+        this.getContentPane().removeAll();
+
+        this.top = new JPanel(new BorderLayout());
+        this.getContentPane().add(top, BorderLayout.NORTH);
+
+        this.addButtons();
 
         this.hand = new HandPanel(this, client, game);
         this.scroll = new JScrollPane(hand);
@@ -89,10 +86,6 @@ public class GameFrame extends JFrame {
 
         this.players = new PlayersPanel(this, client, game);
         this.top.add(players, BorderLayout.WEST);
-
-        for (JButton button : buttons) {
-            button.setVisible(game.isPlayer());
-        }
 
         this.revalidate();
         this.repaint();

@@ -57,7 +57,7 @@ public class UnoGame {
         return players.get(player);
     }
 
-    public boolean isPlayer() {
+    public boolean isActive() {
         return this.isPlayer(active);
     }
 
@@ -97,6 +97,10 @@ public class UnoGame {
 
     public Player getPlayer(UUID id) {
         return players.get(id);
+    }
+
+    public Rank getRank() {
+        return rank;
     }
 
     public void setRank(Rank rank) {
@@ -179,7 +183,7 @@ public class UnoGame {
 
         for (Card card : player.getHand()) {
             if (checkCard(card)) {
-                if (isPlayer(player.getUniqueId())) player.sendMessage("You cannot pickup because you can play your " + card.toString());
+                if (isPlayer(player.getUniqueId())) player.sendMessage("You cannot pickup because you can play a card!");
                 return null;
             }
         }

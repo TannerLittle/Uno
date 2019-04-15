@@ -9,6 +9,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -35,16 +36,8 @@ public class PlayersPanel extends JPanel {
         for (Player player : players) {
             JPanel panel = new JPanel();
             panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-            panel.setBorder(null);
 
-            HiddenCardPanel card = new HiddenCardPanel(50, 75, Integer.toString(player.getHand().size()));
-
-            card.addMouseListener(new MouseAdapter() {
-                @Override
-                public void mouseClicked(MouseEvent e) {
-
-                }
-            });
+            HiddenCardPanel card = new HiddenCardPanel(50, 75, Integer.toString(player.getHand().size()), false);
 
             JLabel label = new JLabel(player.getName());
 

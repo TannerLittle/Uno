@@ -9,7 +9,7 @@ public enum Message {
 
     SUCCESS_WIN("Player {0} has won the game."),
 
-        ;
+    ;
 
     private String message;
 
@@ -26,7 +26,7 @@ public enum Message {
 
         int index = 0;
         for (String arg : args) {
-            message = message.replace(String.format("{%d}", ++index), arg);
+            message = message.replace("{" + (index++) + "}", arg);
         }
 
         return message;

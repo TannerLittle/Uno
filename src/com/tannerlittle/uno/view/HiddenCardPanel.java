@@ -20,16 +20,20 @@ public class HiddenCardPanel extends JPanel {
 
     private String text;
 
-    public HiddenCardPanel(int width, int height, String text) {
+    public HiddenCardPanel(int width, int height, String text, boolean borders) {
+        super();
+
         this.width = width;
         this.height = height;
 
         this.text = text;
 
         this.setPreferredSize(new Dimension(width,height));
-        this.setBorder(border);
 
-        this.addMouseListener(new MouseHandler());
+        if (borders) {
+            this.setBorder(border);
+            this.addMouseListener(new MouseHandler());
+        }
     }
 
     protected void paintComponent(Graphics g) {

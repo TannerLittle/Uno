@@ -23,12 +23,10 @@ public class DeckPanel extends JPanel {
     }
 
     private void initialize() {
-        CardPanel card = new CardPanel(game.getDiscards().peek());
-        this.add(card);
+        CardPanel panel_discards = new CardPanel(game.getDiscards().peek(), false);
 
-        HiddenCardPanel hidden = new HiddenCardPanel(100, 150, "Uno");
-
-        hidden.addMouseListener(new MouseAdapter() {
+        HiddenCardPanel panel_deck = new HiddenCardPanel(100, 150, "Uno", true);
+        panel_deck.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 Player player = game.getPlayer();
@@ -37,6 +35,7 @@ public class DeckPanel extends JPanel {
             }
         });
 
-        this.add(hidden);
+        this.add(panel_discards);
+        this.add(panel_deck);
     }
 }

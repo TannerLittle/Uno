@@ -10,10 +10,8 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 // Runs on Uno Servers
 // Manages Server <=> Client socket connections
@@ -99,6 +97,10 @@ public class UnoServer {
         Card card = deck.pop();
         this.discards.push(card);
 
+        //TODO:
+        // Temporarily set order to alphabetical in order to match PlayerPanel client-side.
+        this.players = players.stream().sorted(Comparator.comparing(Player::getName)).collect(Collectors.toList());
+
         this.rotate();
     }
 
@@ -129,6 +131,7 @@ public class UnoServer {
 
     public void skip() {
         this.active = next();
+        this.rotate();
     }
 
     public void draw(int count) {
@@ -138,10 +141,5 @@ public class UnoServer {
 
     public void reverse() {
         this.rotation = Rotation.getReverse(rotation);
-
-        if (players.size() == 2) {
-            this.skip();
-            this.rotate();
-        }
     }
 }
