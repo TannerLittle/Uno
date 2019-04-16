@@ -131,6 +131,10 @@ public class UnoServer {
 
     public void skip() {
         this.active = next();
+
+        UUID id = players.get(active).getUniqueId();
+        this.broadcastCommand("FLASH " + id + " Your turn has been skipped!");
+
         this.rotate();
     }
 

@@ -28,7 +28,7 @@ public class HiddenCardPanel extends JPanel {
 
         this.text = text;
 
-        this.setPreferredSize(new Dimension(width,height));
+        this.setPreferredSize(new Dimension(width, height));
 
         if (borders) {
             this.setBorder(border);

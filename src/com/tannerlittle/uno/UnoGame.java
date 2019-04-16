@@ -134,7 +134,7 @@ public class UnoGame {
         this.rank = card.getRank();
 
         if (player.getHand().size() == 0) {
-            for (Player p : players.values()) p.sendMessage(Message.SUCCESS_WIN.getMessage(player.getName()));
+            player.sendMessage(Message.SUCCESS_WIN.getMessage(player.getName()));
             System.exit(0);
         }
 

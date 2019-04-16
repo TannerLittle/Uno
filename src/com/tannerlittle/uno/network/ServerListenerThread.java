@@ -94,6 +94,7 @@ public class ServerListenerThread extends ListenerThread {
 
                 if (card.getSuit() == Suit.WILD) {
                     ColorFrame color = new ColorFrame(Main.frame, client, game);
+                    color.setUndecorated(true);
                     color.setVisible(true);
                 } else {
                     for (Card hand : player.getHand()) {
@@ -148,6 +149,14 @@ public class ServerListenerThread extends ListenerThread {
             int count = Integer.parseInt(args[1]);
 
             this.game.draw(id, count);
+        }
+
+        if (command.equals("FLASH")) {
+            String[] args = content.split("\\s+");
+
+            if (args[0].equals("ALL") || game.isPlayer(UUID.fromString(args[0]))) {
+                this.game.getPlayer().sendMessage(content.substring(args[0].length() + 1));
+            }
         }
 
         if (Main.frame != null && Main.frame.isInitialized()) Main.frame.update(false);

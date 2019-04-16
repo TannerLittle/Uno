@@ -3,8 +3,11 @@ package com.tannerlittle.uno.view;
 import com.tannerlittle.uno.UnoGame;
 import com.tannerlittle.uno.network.UnoClient;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,6 +36,9 @@ public class GameFrame extends JFrame {
 
         this.setTitle("Uno | Player: " + game.getPlayer().getName());
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        this.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        this.setUndecorated(true);
     }
 
     private void addButtons() {

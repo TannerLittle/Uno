@@ -6,6 +6,7 @@ import com.tannerlittle.uno.view.GameFrame;
 import com.tannerlittle.uno.view.menu.MenuFrame;
 
 import javax.swing.*;
+import java.util.Scanner;
 
 public class Main {
 
@@ -24,6 +25,25 @@ public class Main {
         }
 
         MenuFrame frame = new MenuFrame(this);
+
+        new Thread(() -> {
+            Scanner scanner = new Scanner(System.in);
+
+            while(true) {
+                if (server == null) {
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
+                    continue;
+                }
+
+                String command = scanner.next();
+                this.server.broadcastCommand(command);
+            }
+        }).start();
     }
 
     public static void main(String[] args) {
