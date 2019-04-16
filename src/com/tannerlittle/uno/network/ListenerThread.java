@@ -42,6 +42,9 @@ public abstract class ListenerThread extends Thread {
             String command = line.split("\\s+")[0];
             String content = (line.length() >= command.length() + 1) ? line.substring(command.length() + 1) : line;
 
+            if (this instanceof ClientListenerThread) System.out.println("Client -> Server: " + line);
+            if (this instanceof ServerListenerThread) System.out.println("Server -> Client: " + line);
+
             this.onCommand(line, command, content);
         }
     }

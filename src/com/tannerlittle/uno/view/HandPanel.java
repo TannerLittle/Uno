@@ -38,7 +38,9 @@ public class HandPanel extends JPanel {
                 public void mouseClicked(MouseEvent e) {
                     Player player = game.getPlayer();
 
-                    client.sendCommand("PLAY " + player.getUniqueId() + " " + card.toString());
+                    if (game.isActive()) {
+                        client.sendCommand("PLAY " + player.getUniqueId() + " " + card.toString());
+                    }
                 }
             });
 

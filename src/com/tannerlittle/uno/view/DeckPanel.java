@@ -31,7 +31,9 @@ public class DeckPanel extends JPanel {
             public void mouseClicked(MouseEvent e) {
                 Player player = game.getPlayer();
 
-                client.sendCommand("PICKUP " + player.getUniqueId());
+                if (game.isActive()) {
+                    client.sendCommand("PICKUP " + player.getUniqueId());
+                }
             }
         });
 

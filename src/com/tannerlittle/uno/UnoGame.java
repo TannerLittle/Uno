@@ -67,14 +67,6 @@ public class UnoGame {
         return player.equals(id);
     }
 
-    public GameState getState() {
-        return state;
-    }
-
-    public Rotation getRotation() {
-        return rotation;
-    }
-
     public Deck getDeck() {
         return deck;
     }

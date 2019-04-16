@@ -57,9 +57,10 @@ public class ColorFrame extends JFrame {
                 public void mouseClicked(MouseEvent event) {
                     Player player = game.getPlayer();
 
-                    client.sendCommand("WILD " + player.getUniqueId() + " " + suit.name());
-
-                    dispatchEvent(new WindowEvent(ColorFrame.this, WindowEvent.WINDOW_CLOSING));
+                    if (game.isActive()) {
+                        client.sendCommand("WILD " + player.getUniqueId() + " " + suit.name());
+                        dispatchEvent(new WindowEvent(ColorFrame.this, WindowEvent.WINDOW_CLOSING));
+                    }
                 }
             });
 
