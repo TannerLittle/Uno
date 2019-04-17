@@ -67,6 +67,7 @@ public class ClientListenerThread extends ListenerThread {
 
         if (command.equals("DRAW")) {
             int count = Integer.parseInt(content);
+
             this.server.draw(count);
             return;
         }

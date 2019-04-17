@@ -49,7 +49,7 @@ public class UnoGame {
     public void start() {
         this.state = GameState.RUNNING;
 
-        Main.frame.update(true);
+        Main.frame.update();
         Main.frame.setVisible(true);
     }
 
@@ -77,6 +77,10 @@ public class UnoGame {
 
     public Collection<Player> getPlayers() {
         return players.values();
+    }
+
+    public GameState getState() {
+        return state;
     }
 
     public UUID getActive() {

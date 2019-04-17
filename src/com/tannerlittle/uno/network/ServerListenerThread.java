@@ -2,11 +2,12 @@ package com.tannerlittle.uno.network;
 
 import com.tannerlittle.uno.Main;
 import com.tannerlittle.uno.UnoGame;
+import com.tannerlittle.uno.enums.GameState;
 import com.tannerlittle.uno.enums.Rank;
 import com.tannerlittle.uno.enums.Suit;
 import com.tannerlittle.uno.model.Card;
 import com.tannerlittle.uno.model.Player;
-import com.tannerlittle.uno.view.ColorFrame;
+import com.tannerlittle.uno.view.ColorPanel;
 
 import java.net.Socket;
 import java.util.UUID;
@@ -92,11 +93,7 @@ public class ServerListenerThread extends ListenerThread {
                         break;
                 }
 
-                if (card.getSuit() == Suit.WILD) {
-                    ColorFrame color = new ColorFrame(Main.frame, client, game);
-                    color.setUndecorated(true);
-                    color.setVisible(true);
-                } else {
+                if (!(game.getState() == GameState.WILD)) {
                     for (Card hand : player.getHand()) {
                         if (hand.getRank().equals(card.getRank())) rotate = false;
                     }
@@ -159,6 +156,6 @@ public class ServerListenerThread extends ListenerThread {
             }
         }
 
-        if (Main.frame != null && Main.frame.isInitialized()) Main.frame.update(false);
+        if (Main.frame != null && Main.frame.isInitialized()) Main.frame.update();
     }
 }

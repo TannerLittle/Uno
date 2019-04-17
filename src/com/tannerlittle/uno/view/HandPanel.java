@@ -1,7 +1,7 @@
 package com.tannerlittle.uno.view;
 
 import com.tannerlittle.uno.UnoGame;
-import com.tannerlittle.uno.enums.Suit;
+import com.tannerlittle.uno.enums.GameState;
 import com.tannerlittle.uno.model.Card;
 import com.tannerlittle.uno.model.Hand;
 import com.tannerlittle.uno.model.Player;
@@ -29,7 +29,7 @@ public class HandPanel extends JPanel {
         Hand hand = game.getPlayer().getHand();
 
         for (Card card : hand) {
-            boolean faded = ((!((game.getRank() == null) || (card.getRank().equals(game.getRank())))) && game.isActive());
+            boolean faded = ((!((game.getRank() == null) || (card.getRank().equals(game.getRank())))) && game.isActive() || ((game.getState() == GameState.WILD) && (game.isActive())));
 
             CardPanel panel = new CardPanel(card, faded);
 

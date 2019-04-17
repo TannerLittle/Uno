@@ -15,12 +15,15 @@ public class CardPanel extends JPanel {
     private final Card card;
     private final boolean faded;
 
-    private final Border border = BorderFactory.createEtchedBorder(WHEN_FOCUSED, Color.WHITE, Color.GRAY);
-    private final Border focused = BorderFactory.createEtchedBorder(WHEN_FOCUSED, Color.BLACK, Color.GRAY);
+    private final Border border;
+    private final Border focused;
 
     public CardPanel(Card card, boolean faded) {
         this.card = card;
         this.faded = faded;
+
+        this.border = BorderFactory.createEtchedBorder(WHEN_FOCUSED, Color.WHITE, card.getSuit().getColor());
+        this.focused = BorderFactory.createEtchedBorder(WHEN_FOCUSED, Color.WHITE, Color.WHITE);
 
         this.setPreferredSize(new Dimension(100,150));
         this.setBorder(border);
@@ -45,7 +48,7 @@ public class CardPanel extends JPanel {
         int width = 100;
         int height = 150;
 
-        g2.setColor(faded ? Color.GRAY : Color.WHITE);
+        g2.setColor(Color.WHITE);
         g2.fillRect(0, 0, width, height);
 
         int margin = 5;
@@ -81,10 +84,10 @@ public class CardPanel extends JPanel {
         y += (font.getSize() / 3);
 
         TextLayout layout = new TextLayout(card.getRank().getValue(), font, g2.getFontRenderContext());
-        g2.setPaint(Color.BLACK);
+        g2.setColor(Color.BLACK);
         layout.draw(g2, x - 3, y + 3);
 
-        g2.setPaint(faded ? Color.GRAY : Color.WHITE);
+        g2.setColor(faded ? Color.GRAY : Color.WHITE);
         layout.draw(g2, x, y);
     }
 }
