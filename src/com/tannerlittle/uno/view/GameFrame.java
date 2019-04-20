@@ -6,8 +6,8 @@ import com.tannerlittle.uno.network.UnoClient;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class GameFrame extends JFrame {
 
@@ -52,28 +52,26 @@ public class GameFrame extends JFrame {
         if (game.isActive()) {
             if (!(game.getRank() == null || game.getState().equals(GameState.WILD))) {
                 JButton button_end = new JButton("End Turn");
-                button_end.setPreferredSize(new Dimension(200, 100));
+                button_end.setPreferredSize(new Dimension(200, 75));
                 button_end.addActionListener(event -> {
                     this.client.sendCommand("ROTATE " + game.getPlayer().getUniqueId());
                 });
 
-                JPanel panel = new JPanel();
-                panel.add(button_end);
-                panel_buttons.add(panel, BorderLayout.EAST);
-            }
-
-            if (game.getPlayer().getHand().size() == 1) {
-                JButton button_uno = new JButton("Uno!");
-                button_uno.setPreferredSize(new Dimension(150, 100));
-                button_uno.addActionListener(event -> {
-                    this.client.sendCommand("UNO " + game.getPlayer().getUniqueId());
-                });
-
-                JPanel panel = new JPanel();
-                panel.add(button_uno);
-                panel_buttons.add(panel, BorderLayout.EAST);
+                JPanel panel_button_end = new JPanel();
+                panel_button_end.add(button_end);
+                panel_buttons.add(panel_button_end, BorderLayout.EAST);
             }
         }
+
+        UnoButtonPanel panel_button_uno = new UnoButtonPanel();
+        panel_button_uno.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                GameFrame.this.client.sendCommand("UNO " + game.getPlayer().getUniqueId());
+            }
+        });
+
+        panel_buttons.add(panel_button_uno, BorderLayout.EAST);
 
         HandPanel panel_hand = new HandPanel(this, client, game);
 

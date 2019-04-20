@@ -109,7 +109,7 @@ public class UnoGame {
             return false;
         }
 
-        if (state.equals(GameState.WILD)) {
+        if ((state.equals(GameState.WILD)) && (!(card.isSimilar(discards.peek())))) {
             if (isPlayer(player.getUniqueId())) player.sendMessage(Message.ERROR_WILD.getMessage());
             return false;
         }
@@ -124,6 +124,7 @@ public class UnoGame {
             return false;
         }
 
+
         player.getHand().removeElement(card);
 
         this.discards.push(card);
@@ -137,6 +138,8 @@ public class UnoGame {
         if (card.getSuit() == Suit.WILD) {
             this.state = GameState.WILD;
         }
+
+        player.setUno(false);
 
         return true;
     }
@@ -208,6 +211,48 @@ public class UnoGame {
         for (int i = 0; i < count; i++) {
             player.getHand().push(deck.pop());
         }
+    }
+
+    public boolean callUno(UUID id) {
+        Player player = players.get(id);
+
+        if (player.getHand().size() == 1) {
+            if (player.getUno()) {
+                if (isPlayer(id)) player.sendMessage("You have already called Uno!");
+                return false;
+            }
+
+            if (isPlayer(id)) player.sendMessage("You called Uno!");
+
+            player.setUno(true);
+            return true;
+        }
+
+        for (Player target : players.values()) {
+            if ((target.getHand().size() == 1) && (!(target.getUno()))) {
+                if (isPlayer(id)) {
+                    player.sendMessage("You called " + target.getName() + " for not calling Uno!");
+                } else {
+                    this.getPlayer().sendMessage(player.getName() + " called " + target.getName() + " for not calling Uno!");
+                }
+
+                for (int i = 0; i < 2; i++) {
+                    target.getHand().add(deck.pop());
+                }
+
+                return false;
+            }
+        }
+
+        if (isPlayer(id)) {
+            player.sendMessage("You must pick up 2 for calling Uno! with more than one card!");
+
+            for (int i = 0; i < 2; i++) {
+                player.getHand().add(deck.pop());
+            }
+        }
+
+        return false;
     }
 
     private boolean checkCard(Card card) {

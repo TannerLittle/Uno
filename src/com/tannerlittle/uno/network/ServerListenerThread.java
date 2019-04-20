@@ -15,6 +15,8 @@ import java.util.UUID;
 // Runs on Uno Clients
 // Accepts commands from server
 
+//TODO: This class should ONLY translate commands - all processing should be in UnoGame
+
 public class ServerListenerThread extends ListenerThread {
 
     private UnoClient client;
@@ -154,6 +156,14 @@ public class ServerListenerThread extends ListenerThread {
             if (args[0].equals("ALL") || game.isPlayer(UUID.fromString(args[0]))) {
                 this.game.getPlayer().sendMessage(content.substring(args[0].length() + 1));
             }
+        }
+
+        if (command.equals("UNO")) {
+            String[] args = content.split("\\s+");
+
+            UUID id = UUID.fromString(args[0]);
+
+            this.game.callUno(id);
         }
 
         if (Main.frame != null && Main.frame.isInitialized()) Main.frame.update();

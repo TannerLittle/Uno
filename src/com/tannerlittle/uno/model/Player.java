@@ -10,6 +10,8 @@ public class Player {
 
     private Hand hand;
 
+    private boolean uno = false;
+
     public Player(UUID id, String name) {
         this.id = id;
         this.name = name;
@@ -26,6 +28,14 @@ public class Player {
 
     public Hand getHand() {
         return hand;
+    }
+
+    public boolean getUno() {
+        return uno;
+    }
+
+    public void setUno(boolean uno) {
+        this.uno = uno;
     }
 
     public String getCommand() {

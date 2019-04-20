@@ -29,7 +29,7 @@ public class HandPanel extends JPanel {
         Hand hand = game.getPlayer().getHand();
 
         for (Card card : hand) {
-            boolean faded = ((!((game.getRank() == null) || (card.getRank().equals(game.getRank())))) && game.isActive() || ((game.getState() == GameState.WILD) && (game.isActive())));
+            boolean faded = ((!((game.getRank() == null) || (card.getRank().equals(game.getRank())))) && game.isActive());
 
             CardPanel panel = new CardPanel(card, faded);
 
