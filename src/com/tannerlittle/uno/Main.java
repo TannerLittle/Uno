@@ -6,6 +6,8 @@ import com.tannerlittle.uno.view.GameFrame;
 import com.tannerlittle.uno.view.menu.MenuFrame;
 
 import javax.swing.*;
+import java.io.IOException;
+import java.net.InetAddress;
 import java.util.Scanner;
 
 public class Main {
@@ -17,37 +19,57 @@ public class Main {
 
     public static GameFrame frame;
 
-    public Main() {
+    public Main(String[] args) {
+        if (args.length == 0) {
+            try {
+                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+
+            MenuFrame frame = new MenuFrame(this);
+
+            new Thread(() -> {
+                Scanner scanner = new Scanner(System.in);
+
+                while(true) {
+                    if (server == null) {
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+
+                        continue;
+                    }
+
+                    String command = scanner.nextLine();
+                    this.server.broadcastCommand(command);
+                }
+            }).start();
+
+            return;
+        }
+
+        // Run as headless server
+
         try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (Exception ex) {
+            InetAddress address = InetAddress.getByName(args[0]);
+            int port = Integer.parseInt(args[1]);
+
+            this.server = new UnoServer(address, port);
+        } catch (IOException ex) {
             ex.printStackTrace();
         }
 
-        MenuFrame frame = new MenuFrame(this);
-
-        new Thread(() -> {
-            Scanner scanner = new Scanner(System.in);
-
-            while(true) {
-                if (server == null) {
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-
-                    continue;
-                }
-
-                String command = scanner.next();
-                this.server.broadcastCommand(command);
-            }
-        }).start();
+        if (server == null) {
+            System.out.println("Unable to establish a socket connection.");
+            System.exit(0);
+        }
     }
 
     public static void main(String[] args) {
-        new Main();
+        new Main(args);
     }
 
     public UnoGame getGame() {

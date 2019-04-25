@@ -7,15 +7,12 @@ import com.tannerlittle.uno.enums.Rank;
 import com.tannerlittle.uno.enums.Suit;
 import com.tannerlittle.uno.model.Card;
 import com.tannerlittle.uno.model.Player;
-import com.tannerlittle.uno.view.ColorPanel;
 
 import java.net.Socket;
 import java.util.UUID;
 
 // Runs on Uno Clients
 // Accepts commands from server
-
-//TODO: This class should ONLY translate commands - all processing should be in UnoGame
 
 public class ServerListenerThread extends ListenerThread {
 
@@ -47,13 +44,13 @@ public class ServerListenerThread extends ListenerThread {
         }
 
         if (command.equals("START")) {
-            this.game.start();
+            this.game.start(client);
         }
 
         if (command.equals("PLAYER")) {
             String[] args = content.split("\\s+");
             UUID id = UUID.fromString(args[0]);
-            String name = args[1];
+            String name = content.substring(args[0].length() + 1);
 
             Player player = new Player(id, name);
             this.game.addPlayer(player);
@@ -154,7 +151,7 @@ public class ServerListenerThread extends ListenerThread {
             String[] args = content.split("\\s+");
 
             if (args[0].equals("ALL") || game.isPlayer(UUID.fromString(args[0]))) {
-                this.game.getPlayer().sendMessage(content.substring(args[0].length() + 1));
+                Main.frame.flash(content.substring(args[0].length() + 1));
             }
         }
 
@@ -166,6 +163,6 @@ public class ServerListenerThread extends ListenerThread {
             this.game.callUno(id);
         }
 
-        if (Main.frame != null && Main.frame.isInitialized()) Main.frame.update();
+        if (!(Main.frame == null)) Main.frame.update();
     }
 }

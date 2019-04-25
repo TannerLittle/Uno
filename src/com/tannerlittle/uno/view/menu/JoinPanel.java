@@ -47,22 +47,17 @@ public class JoinPanel extends JPanel {
         this.add(box);
 
         button_join.addActionListener(event -> {
-            UnoClient client = null;
-
             try {
                 InetAddress address = InetAddress.getByName(field_address.getText());
                 int port = Integer.valueOf(field_port.getText());
 
-                client = new UnoClient(main.getGame(), address, port);
+                UnoClient client = new UnoClient(main.getGame(), address, port);
                 client.sendCommand(main.getGame().getPlayer().getCommand());
 
                 this.main.setClient(client);
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
-
-            Main.frame = new GameFrame(client, main.getGame());
-            this.frame.setVisible(false);
         });
     }
 }

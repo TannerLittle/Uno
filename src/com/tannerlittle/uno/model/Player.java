@@ -41,8 +41,4 @@ public class Player {
     public String getCommand() {
         return "PLAYER " + id + " " + name;
     }
-
-    public void sendMessage(String message) {
-        JOptionPane.showMessageDialog(null, message);
-    }
 }

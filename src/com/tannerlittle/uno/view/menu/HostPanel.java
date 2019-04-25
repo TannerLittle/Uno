@@ -61,7 +61,10 @@ public class HostPanel extends JPanel {
         UnoServer server = null;
 
         try {
-            server = new UnoServer(null);
+            InetAddress address = InetAddress.getLocalHost();
+            int port = 0; // Automatically assign a free port
+
+            server = new UnoServer(address, port);
             this.main.setServer(server);
         } catch (IOException ex) {
             ex.printStackTrace();
@@ -86,7 +89,5 @@ public class HostPanel extends JPanel {
 
         this.field_address.setText(server.getSocketAddress().getHostAddress());
         this.field_port.setText(String.valueOf(server.getPort()));
-
-        Main.frame = new GameFrame(client, main.getGame());
     }
 }

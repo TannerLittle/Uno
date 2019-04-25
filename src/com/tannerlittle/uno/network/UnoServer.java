@@ -28,9 +28,8 @@ public class UnoServer {
     private List<Player> players = new LinkedList<>();
     private int active;
 
-    public UnoServer(String address) throws IOException {
-        InetAddress inet = ((address == null) || (address.isEmpty())) ? InetAddress.getLocalHost() : InetAddress.getByName(address);
-        this.server = new ServerSocket(0, 1, inet);
+    public UnoServer(InetAddress address, int port) throws IOException {
+        this.server = new ServerSocket(port, 1, address);
 
         this.thread = new Thread(() -> {
             while (true) {

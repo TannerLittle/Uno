@@ -5,6 +5,8 @@ import com.tannerlittle.uno.model.Card;
 import com.tannerlittle.uno.model.Deck;
 import com.tannerlittle.uno.model.Discards;
 import com.tannerlittle.uno.model.Player;
+import com.tannerlittle.uno.network.UnoClient;
+import com.tannerlittle.uno.view.GameFrame;
 
 import java.util.*;
 
@@ -46,11 +48,10 @@ public class UnoGame {
         this.players.put(player.getUniqueId(), player);
     }
 
-    public void start() {
+    public void start(UnoClient client) {
         this.state = GameState.RUNNING;
 
-        Main.frame.update();
-        Main.frame.setVisible(true);
+        Main.frame = new GameFrame(client, this);
     }
 
     public Player getPlayer() {
@@ -105,22 +106,22 @@ public class UnoGame {
 
     public boolean playCard(Player player, Card card) {
         if (!(player.getUniqueId().equals(active))) {
-            if (isPlayer(player.getUniqueId())) player.sendMessage(Message.ERROR_NOT_ACTIVE.getMessage());
+            if (isPlayer(player.getUniqueId())) Main.frame.flash(Message.ERROR_NOT_ACTIVE.getMessage());
             return false;
         }
 
         if ((state.equals(GameState.WILD)) && (!(card.isSimilar(discards.peek())))) {
-            if (isPlayer(player.getUniqueId())) player.sendMessage(Message.ERROR_WILD.getMessage());
+            if (isPlayer(player.getUniqueId())) Main.frame.flash(Message.ERROR_WILD.getMessage());
             return false;
         }
 
         if (!((rank == null) || (card.getRank().equals(rank)))) {
-            if (isPlayer(player.getUniqueId())) player.sendMessage(Message.ERROR_INVALID_CARD.getMessage());
+            if (isPlayer(player.getUniqueId())) Main.frame.flash(Message.ERROR_INVALID_CARD.getMessage());
             return false;
         }
 
         if (!(checkCard(card))) {
-            if (isPlayer(player.getUniqueId())) player.sendMessage(Message.ERROR_INVALID_CARD.getMessage());
+            if (isPlayer(player.getUniqueId())) Main.frame.flash(Message.ERROR_INVALID_CARD.getMessage());
             return false;
         }
 
@@ -131,7 +132,7 @@ public class UnoGame {
         this.rank = card.getRank();
 
         if (player.getHand().size() == 0) {
-            player.sendMessage(Message.SUCCESS_WIN.getMessage(player.getName()));
+            Main.frame.flash(Message.SUCCESS_WIN.getMessage(player.getName()));
             System.exit(0);
         }
 
@@ -146,12 +147,12 @@ public class UnoGame {
 
     public boolean setWild(Player player, Suit suit) {
         if (!(player.getUniqueId().equals(active))) {
-            if (isPlayer(player.getUniqueId())) player.sendMessage(Message.ERROR_NOT_ACTIVE.getMessage());
+            if (isPlayer(player.getUniqueId())) Main.frame.flash(Message.ERROR_NOT_ACTIVE.getMessage());
             return false;
         }
 
         if (!(state.equals(GameState.WILD))) {
-            if (isPlayer(player.getUniqueId())) player.sendMessage(Message.ERROR_NOT_WILD.getMessage());
+            if (isPlayer(player.getUniqueId())) Main.frame.flash(Message.ERROR_NOT_WILD.getMessage());
             return false;
         }
 
@@ -167,7 +168,7 @@ public class UnoGame {
 
     public Card pickupCard(Player player) {
         if (!(player.getUniqueId().equals(active))) {
-            if (isPlayer(player.getUniqueId())) player.sendMessage(Message.ERROR_NOT_ACTIVE.getMessage());
+            if (isPlayer(player.getUniqueId())) Main.frame.flash(Message.ERROR_NOT_ACTIVE.getMessage());
             return null;
         }
 
@@ -176,13 +177,13 @@ public class UnoGame {
         }
 
         if (!(rank == null)) {
-            if (isPlayer(player.getUniqueId())) player.sendMessage("You cannot pick because you've already played!");
+            if (isPlayer(player.getUniqueId())) Main.frame.flash("You cannot pick because you've already played!");
             return null;
         }
 
         for (Card card : player.getHand()) {
             if (checkCard(card)) {
-                if (isPlayer(player.getUniqueId())) player.sendMessage("You cannot pickup because you can play a card!");
+                if (isPlayer(player.getUniqueId())) Main.frame.flash("You cannot pickup because you can play a card!");
                 return null;
             }
         }
@@ -218,11 +219,11 @@ public class UnoGame {
 
         if (player.getHand().size() == 1) {
             if (player.getUno()) {
-                if (isPlayer(id)) player.sendMessage("You have already called Uno!");
+                if (isPlayer(id)) Main.frame.flash("You have already called Uno!");
                 return false;
             }
 
-            if (isPlayer(id)) player.sendMessage("You called Uno!");
+            if (isPlayer(id)) Main.frame.flash("You called Uno!");
 
             player.setUno(true);
             return true;
@@ -231,9 +232,9 @@ public class UnoGame {
         for (Player target : players.values()) {
             if ((target.getHand().size() == 1) && (!(target.getUno()))) {
                 if (isPlayer(id)) {
-                    player.sendMessage("You called " + target.getName() + " for not calling Uno!");
+                    Main.frame.flash("You called " + target.getName() + " for not calling Uno!");
                 } else {
-                    this.getPlayer().sendMessage(player.getName() + " called " + target.getName() + " for not calling Uno!");
+                    Main.frame.flash(player.getName() + " called " + target.getName() + " for not calling Uno!");
                 }
 
                 for (int i = 0; i < 2; i++) {
@@ -245,7 +246,7 @@ public class UnoGame {
         }
 
         if (isPlayer(id)) {
-            player.sendMessage("You must pick up 2 for calling Uno! with more than one card!");
+            Main.frame.flash("You must pick up 2 for calling Uno! with more than one card!");
 
             for (int i = 0; i < 2; i++) {
                 player.getHand().add(deck.pop());

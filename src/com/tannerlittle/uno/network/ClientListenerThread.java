@@ -8,8 +8,6 @@ import java.util.UUID;
 // Runs on Uno Server
 // Accepts and broadcasts commands
 
-//TODO: This class should ONLY translate commands - all processing should be in Server
-
 public class ClientListenerThread extends ListenerThread {
 
     private UnoServer server;
