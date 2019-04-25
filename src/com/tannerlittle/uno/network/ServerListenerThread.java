@@ -1,6 +1,5 @@
 package com.tannerlittle.uno.network;
 
-import com.tannerlittle.uno.Main;
 import com.tannerlittle.uno.UnoGame;
 import com.tannerlittle.uno.enums.GameState;
 import com.tannerlittle.uno.enums.Rank;
@@ -151,7 +150,7 @@ public class ServerListenerThread extends ListenerThread {
             String[] args = content.split("\\s+");
 
             if (args[0].equals("ALL") || game.isPlayer(UUID.fromString(args[0]))) {
-                Main.frame.flash(content.substring(args[0].length() + 1));
+                game.getFrame().flash(content.substring(args[0].length() + 1));
             }
         }
 
@@ -163,6 +162,6 @@ public class ServerListenerThread extends ListenerThread {
             this.game.callUno(id);
         }
 
-        if (!(Main.frame == null)) Main.frame.update();
+        if (!(game.getFrame() == null)) game.getFrame().update();
     }
 }

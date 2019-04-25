@@ -2,7 +2,6 @@ package com.tannerlittle.uno;
 
 import com.tannerlittle.uno.network.UnoClient;
 import com.tannerlittle.uno.network.UnoServer;
-import com.tannerlittle.uno.view.GameFrame;
 import com.tannerlittle.uno.view.menu.MenuFrame;
 
 import javax.swing.*;
@@ -17,8 +16,6 @@ public class Main {
     private UnoServer server;
     private UnoClient client;
 
-    public static GameFrame frame;
-
     public Main(String[] args) {
         if (args.length == 0) {
             try {
@@ -27,7 +24,7 @@ public class Main {
                 ex.printStackTrace();
             }
 
-            MenuFrame frame = new MenuFrame(this);
+            new MenuFrame(this);
 
             new Thread(() -> {
                 Scanner scanner = new Scanner(System.in);
