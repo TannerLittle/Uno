@@ -21,6 +21,7 @@ public class GameFrame extends JFrame {
     private JPanel panel_bottom;
 
     private JPanel panel_players;
+    private JPanel panel_flash;
 
     //TODO: make button_end a custom panel as well
     private JButton button_end;
@@ -117,7 +118,8 @@ public class GameFrame extends JFrame {
 
         JScrollPane scroll_pane_hand = new JScrollPane(panel_hand);
         scroll_pane_hand.setBorder(null);
-        scroll_pane_hand.setPreferredSize(new Dimension(740, 180));
+        scroll_pane_hand.setPreferredSize(new Dimension(740, 200));
+        scroll_pane_hand.getHorizontalScrollBar().setPreferredSize(new Dimension(0, 40));
 
         this.panel_bottom.add(scroll_pane_hand);
 
@@ -131,12 +133,15 @@ public class GameFrame extends JFrame {
     }
 
     public void flash(String message) {
+        if (!(panel_flash == null)) {
+            this.panel_flash.setVisible(false);
+        }
+
         JLabel label = new JLabel();
-        label.setOpaque(true);
 
         label.setText(message);
         label.setFont(new Font("Arial", Font.PLAIN,42));
-        label.setForeground(Color.WHITE);
+        label.setForeground(getBackground());
 
         JPanel panel_flash = new JPanel();
         panel_flash.add(label);
@@ -172,8 +177,12 @@ public class GameFrame extends JFrame {
                         label.setForeground(new Color(intensity, intensity, intensity));
                         count++;
                     } else {
-                        label.setVisible(false);
                         timer_out.stop();
+
+                        GameFrame.this.panel_top.remove(panel_flash);
+
+                        GameFrame.this.revalidate();
+                        GameFrame.this.repaint();
                     }
                 }
             });
@@ -190,5 +199,12 @@ public class GameFrame extends JFrame {
         });
 
         thread.start();
+
+        // Done after threads/timers to avoid overwriting
+        this.panel_flash = panel_flash;
+
+        // Render
+        this.revalidate();
+        this.repaint();
     }
 }

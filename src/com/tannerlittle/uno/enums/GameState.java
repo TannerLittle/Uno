@@ -5,5 +5,4 @@ public enum GameState {
     SETUP,
     RUNNING,
     WILD,
-    PAUSED,
 }

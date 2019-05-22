@@ -2,7 +2,6 @@ package com.tannerlittle.uno.view.menu;
 
 import com.tannerlittle.uno.Main;
 import com.tannerlittle.uno.network.UnoClient;
-import com.tannerlittle.uno.view.GameFrame;
 
 import javax.swing.*;
 import java.io.IOException;
@@ -55,6 +54,12 @@ public class JoinPanel extends JPanel {
                 client.sendCommand(main.getGame().getPlayer().getCommand());
 
                 this.main.setClient(client);
+
+                this.removeAll();
+                this.add(new JLabel("Connected. Wait for the host to start the game."));
+
+                this.revalidate();
+                this.repaint();
             } catch (IOException ex) {
                 ex.printStackTrace();
             }

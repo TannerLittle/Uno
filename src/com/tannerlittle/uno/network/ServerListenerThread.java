@@ -5,6 +5,7 @@ import com.tannerlittle.uno.enums.GameState;
 import com.tannerlittle.uno.enums.Rank;
 import com.tannerlittle.uno.enums.Suit;
 import com.tannerlittle.uno.model.Card;
+import com.tannerlittle.uno.model.Discards;
 import com.tannerlittle.uno.model.Player;
 
 import java.net.Socket;
@@ -58,8 +59,6 @@ public class ServerListenerThread extends ListenerThread {
         }
 
         if (command.equals("PLAY")) {
-            boolean rotate = true;
-
             String[] args = content.split("\\s+");
 
             UUID id = UUID.fromString(args[0]);
@@ -79,7 +78,6 @@ public class ServerListenerThread extends ListenerThread {
                         break;
                     case SKIP:
                         this.sendCommand("SKIP " + player.getUniqueId());
-                        rotate = false;
                         break;
                     case DRAW_TWO:
                         this.sendCommand("DRAW 2");
@@ -92,9 +90,15 @@ public class ServerListenerThread extends ListenerThread {
                 }
 
                 if (!(game.getState() == GameState.WILD)) {
+                    boolean rotate = true;
+
                     for (Card hand : player.getHand()) {
-                        if (hand.getRank().equals(card.getRank())) rotate = false;
+                        if ((rank.equals(Rank.SKIP)) || (hand.getRank().equals(card.getRank()))) {
+                            rotate = false;
+                        }
                     }
+
+                    rotate = (rank.equals(Rank.DRAW_TWO) || rank.equals(Rank.WILD_DRAW_FOUR)) || rotate;
 
                     if (rotate) this.sendCommand("ROTATE " + player.getUniqueId());
                 }

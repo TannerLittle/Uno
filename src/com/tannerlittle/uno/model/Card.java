@@ -8,6 +8,8 @@ public class Card {
     private Suit suit;
     private Rank rank;
 
+    private boolean used = false;
+
     public Card(Suit suit, Rank rank) {
         this.suit = suit;
         this.rank = rank;
@@ -23,6 +25,14 @@ public class Card {
 
     public Rank getRank() {
         return rank;
+    }
+
+    public boolean isUsed() {
+        return used;
+    }
+
+    public void setUsed(boolean used) {
+        this.used = used;
     }
 
     public String toString() {

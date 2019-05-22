@@ -1,5 +1,6 @@
 package com.tannerlittle.uno.network;
 
+import com.tannerlittle.uno.enums.Rank;
 import com.tannerlittle.uno.enums.Rotation;
 import com.tannerlittle.uno.model.*;
 
@@ -141,7 +142,7 @@ public class UnoServer {
     }
 
     public void skip(UUID id) {
-        if (!(players.get(active).equals(id))) return;
+        if (!(players.get(active).getUniqueId().equals(id))) return;
 
         this.active = next();
 
@@ -152,6 +153,7 @@ public class UnoServer {
 
     public void draw(int count) {
         UUID id = players.get(next()).getUniqueId();
+
         this.broadcastCommand("DRAW " + id + " " + count);
     }
 

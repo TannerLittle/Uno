@@ -85,6 +85,10 @@ public class UnoGame {
         return state;
     }
 
+    public void setState(GameState state) {
+        this.state = state;
+    }
+
     public UUID getActive() {
         return active;
     }
@@ -278,7 +282,7 @@ public class UnoGame {
     }
 
     private void flash(UUID id, String message) {
-        if (active.equals(id)) {
+        if (isPlayer(id)) {
             this.frame.flash(message);
         }
     }
