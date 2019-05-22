@@ -210,18 +210,6 @@ public class UnoGame {
     public void draw(UUID id, int count) {
         Player player = players.get(id);
 
-        Rank rank = (count == 2 ? Rank.DRAW_TWO : (count == 4) ? Rank.WILD_DRAW_FOUR : null);
-
-        if (!(rank == null)) {
-            int i = 1;
-
-            while ((discards.size() > i) && (discards.get(discards.size() - i).getRank().equals(rank))) {
-                i++;
-            }
-
-            count = ((i - 1) * count);
-        }
-
         for (int i = 0; i < count; i++) {
             player.getHand().push(deck.pop());
         }

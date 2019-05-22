@@ -1,6 +1,5 @@
 package com.tannerlittle.uno.network;
 
-import com.tannerlittle.uno.enums.Rank;
 import com.tannerlittle.uno.enums.Rotation;
 import com.tannerlittle.uno.model.*;
 
@@ -146,7 +145,7 @@ public class UnoServer {
 
         this.active = next();
 
-        this.broadcastCommand("FLASH " + id + " Your turn has been skipped!");
+        this.broadcastCommand("FLASH " + players.get(active).getUniqueId() + " Your turn has been skipped!");
 
         this.rotate();
     }
@@ -159,6 +158,8 @@ public class UnoServer {
 
     public void reverse(UUID id) {
         if (!(getActive().equals(id))) return;
+
+        this.broadcastCommand("FLASH ALL Reverse!");
 
         this.rotation = Rotation.getReverse(rotation);
     }
