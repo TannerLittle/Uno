@@ -52,6 +52,8 @@ public class GameFrame extends JFrame {
             }
         });
 
+        this.panel_button_uno.setVisible(false); // TODO: temporarily hide uno button
+
         // Initialize 'End Turn' button
         this.button_end = new JButton("End Turn");
         this.button_end.setPreferredSize(new Dimension(200, 75));
