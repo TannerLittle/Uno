@@ -139,6 +139,10 @@ public class ServerListenerThread extends ListenerThread {
 
             this.game.setActive(id);
             this.game.setRank(null);
+
+            if ((game.isPlayer(id)) && (!(game.getFrame() == null))) {
+                this.game.getFrame().flash("It is your turn to play!");
+            }
         }
 
         if (command.equals("DRAW")) {
