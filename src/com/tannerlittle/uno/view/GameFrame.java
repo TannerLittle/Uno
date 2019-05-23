@@ -43,6 +43,15 @@ public class GameFrame extends JFrame {
         this.panel_bottom = new JPanel();
         this.getContentPane().add(panel_bottom, BorderLayout.SOUTH);
 
+        // Initialize 'Uno' button
+        this.panel_button_uno = new UnoButtonPanel();
+        this.panel_button_uno.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                GameFrame.this.client.sendCommand("UNO " + game.getPlayer().getUniqueId());
+            }
+        });
+
         // Initialize 'End Turn' button
         this.button_end = new JButton("End Turn");
         this.button_end.setPreferredSize(new Dimension(200, 75));
@@ -53,15 +62,6 @@ public class GameFrame extends JFrame {
         JPanel panel_button_end = new JPanel();
         panel_button_end.add(button_end);
 
-        // Initialize 'Uno' button
-        this.panel_button_uno = new UnoButtonPanel();
-        this.panel_button_uno.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                GameFrame.this.client.sendCommand("UNO " + game.getPlayer().getUniqueId());
-            }
-        });
-
         // Initialize buttons framework
         JPanel panel_buttons = new JPanel();
         panel_buttons.setLayout(new BoxLayout(panel_buttons, BoxLayout.Y_AXIS));
@@ -70,8 +70,13 @@ public class GameFrame extends JFrame {
         panel_buttons_right.setLayout(new FlowLayout(FlowLayout.RIGHT));
         panel_buttons_right.add(panel_buttons);
 
-        panel_buttons.add(panel_button_end, BorderLayout.EAST);
         panel_buttons.add(panel_button_uno, BorderLayout.EAST);
+        panel_buttons.add(panel_button_end, BorderLayout.EAST);
+
+        // Initialize flash
+        this.panel_flash = new JPanel();
+        this.panel_flash.setPreferredSize(new Dimension(panel_flash.getWidth(), 56));
+        this.panel_top.add(panel_flash, BorderLayout.SOUTH);
 
         this.panel_top.add(panel_buttons_right, BorderLayout.EAST);
 
@@ -133,20 +138,14 @@ public class GameFrame extends JFrame {
     }
 
     public void flash(String message) {
-        if (!(panel_flash == null)) {
-            this.panel_flash.setVisible(false);
-        }
-
         JLabel label = new JLabel();
 
         label.setText(message);
-        label.setFont(new Font("Arial", Font.PLAIN,42));
-        label.setForeground(getBackground());
+        label.setFont(new Font("SansSerif", Font.PLAIN,42));
+        label.setVisible(false);
 
-        JPanel panel_flash = new JPanel();
-        panel_flash.add(label);
-
-        this.panel_top.add(panel_flash, BorderLayout.SOUTH);
+        this.panel_flash.removeAll();
+        this.panel_flash.add(label);
 
         final int steps = 25;
 
@@ -159,9 +158,12 @@ public class GameFrame extends JFrame {
 
                 public void actionPerformed(ActionEvent e) {
                     if (count <= steps) {
-                        float intensity = (1.0f - count / (float) steps);
+                        float intensity = (1.0f - (count++ / (float) steps));
+
+                        if (intensity >= 0.9f) return;
+
+                        label.setVisible(true);
                         label.setForeground(new Color(intensity, intensity, intensity));
-                        count++;
                     } else {
                         timer_in.stop();
                     }
@@ -169,17 +171,19 @@ public class GameFrame extends JFrame {
             });
 
             timer_out.addActionListener(new ActionListener() {
-                int count = 0;
+                int count = 10;
 
                 public void actionPerformed(ActionEvent e) {
                     if (count <= steps) {
-                        float intensity = (count / (float) steps);
+                        float intensity = (count++ / (float) steps);
+
+                        if (intensity >= 0.9f) return;
+
                         label.setForeground(new Color(intensity, intensity, intensity));
-                        count++;
                     } else {
                         timer_out.stop();
 
-                        GameFrame.this.panel_top.remove(panel_flash);
+                        label.setVisible(false);
 
                         GameFrame.this.revalidate();
                         GameFrame.this.repaint();
@@ -199,9 +203,6 @@ public class GameFrame extends JFrame {
         });
 
         thread.start();
-
-        // Done after threads/timers to avoid overwriting
-        this.panel_flash = panel_flash;
 
         // Render
         this.revalidate();
