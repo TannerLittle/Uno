@@ -138,6 +138,7 @@ public class UnoServer {
 
         Player player = players.get(active);
         this.broadcastCommand("ACTIVE " + player.getUniqueId());
+        this.broadcastCommand("FLASH " + player.getUniqueId() + "It is your turn to play!");
     }
 
     public void skip(UUID id) {
