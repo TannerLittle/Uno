@@ -39,6 +39,8 @@ public class HandPanel extends JPanel {
 
                     if (game.isActive()) {
                         client.sendCommand("PLAY " + player.getUniqueId() + " " + card.toString());
+                    } else {
+                        game.getFrame().flash("It is not your turn to play!");
                     }
                 }
             });
