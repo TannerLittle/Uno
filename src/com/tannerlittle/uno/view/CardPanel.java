@@ -25,7 +25,9 @@ public class CardPanel extends JPanel {
         this.border = BorderFactory.createEtchedBorder(WHEN_FOCUSED, Color.WHITE, card.getSuit().getColor());
         this.focused = BorderFactory.createEtchedBorder(WHEN_FOCUSED, Color.WHITE, Color.WHITE);
 
+        this.setOpaque(false);
         this.setPreferredSize(new Dimension(100,150));
+
         this.setBorder(border);
 
         this.addMouseListener(new MouseAdapter() {

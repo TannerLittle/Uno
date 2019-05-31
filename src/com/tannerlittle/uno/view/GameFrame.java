@@ -4,17 +4,22 @@ import com.tannerlittle.uno.UnoGame;
 import com.tannerlittle.uno.enums.GameState;
 import com.tannerlittle.uno.network.UnoClient;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 
 public class GameFrame extends JFrame {
 
     private UnoClient client;
     private UnoGame game;
+
+    private BackgroundPanel panel;
 
     private JPanel panel_top;
     private JPanel panel_center;
@@ -23,25 +28,39 @@ public class GameFrame extends JFrame {
     private JPanel panel_players;
     private JPanel panel_flash;
 
-    //TODO: make button_end a custom panel as well
-    private JButton button_end;
     private JPanel panel_button_uno;
 
     public GameFrame(UnoClient client, UnoGame game) throws HeadlessException {
         this.client = client;
         this.game = game;
 
+        // Initialize background panel
+        BufferedImage image = null;
+
+        try {
+            image = ImageIO.read(getClass().getResource("/images/gaming-pattern.png"));
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+
+        this.panel = new BackgroundPanel(image, BackgroundPanel.TILED, 1.0f, 0.5f);
+        this.panel.setPaint(null);
+        this.getContentPane().add(panel);
+
         // Initialize top panel
         this.panel_top = new JPanel(new BorderLayout());
-        this.getContentPane().add(panel_top, BorderLayout.NORTH);
+        this.panel_top.setOpaque(false);
+        this.panel.add(panel_top, BorderLayout.NORTH);
 
         // Initialize center panel
         this.panel_center = new JPanel();
-        this.getContentPane().add(panel_center, BorderLayout.CENTER);
+        this.panel_center.setOpaque(false);
+        this.panel.add(panel_center, BorderLayout.CENTER);
 
         // Initialize bottom panel
         this.panel_bottom = new JPanel();
-        this.getContentPane().add(panel_bottom, BorderLayout.SOUTH);
+        this.panel_bottom.setOpaque(false);
+        this.panel.add(panel_bottom, BorderLayout.SOUTH);
 
         // Initialize 'Uno' button
         this.panel_button_uno = new UnoButtonPanel();
@@ -54,34 +73,26 @@ public class GameFrame extends JFrame {
 
         this.panel_button_uno.setVisible(false); // TODO: temporarily hide uno button
 
-        // Initialize 'End Turn' button
-        this.button_end = new JButton("End Turn");
-        this.button_end.setPreferredSize(new Dimension(200, 75));
-        this.button_end.addActionListener(event -> {
-            this.client.sendCommand("ROTATE " + game.getPlayer().getUniqueId());
-        });
-
-        JPanel panel_button_end = new JPanel();
-        panel_button_end.add(button_end);
-
         // Initialize buttons framework
         JPanel panel_buttons = new JPanel();
         panel_buttons.setLayout(new BoxLayout(panel_buttons, BoxLayout.Y_AXIS));
 
         JPanel panel_buttons_right = new JPanel();
+        panel_buttons_right.setOpaque(false);
         panel_buttons_right.setLayout(new FlowLayout(FlowLayout.RIGHT));
         panel_buttons_right.add(panel_buttons);
 
         panel_buttons.add(panel_button_uno, BorderLayout.EAST);
-        panel_buttons.add(panel_button_end, BorderLayout.EAST);
 
         // Initialize flash
         this.panel_flash = new JPanel();
-        this.panel_flash.setPreferredSize(new Dimension(panel_flash.getWidth(), 56));
+        this.panel_flash.setOpaque(false);
+        this.panel_flash.setPreferredSize(new Dimension(panel_flash.getWidth(), 62));
         this.panel_top.add(panel_flash, BorderLayout.SOUTH);
 
         this.panel_top.add(panel_buttons_right, BorderLayout.EAST);
 
+        // Initialize frame
         int width = 500;
         int height = 400;
 
@@ -122,17 +133,16 @@ public class GameFrame extends JFrame {
 
         // Update player hand
         HandPanel panel_hand = new HandPanel(this, client, game);
+        panel_hand.setOpaque(false);
 
         JScrollPane scroll_pane_hand = new JScrollPane(panel_hand);
+        scroll_pane_hand.setOpaque(false);
+        scroll_pane_hand.getViewport().setOpaque(false);
         scroll_pane_hand.setBorder(null);
         scroll_pane_hand.setPreferredSize(new Dimension(740, 200));
         scroll_pane_hand.getHorizontalScrollBar().setPreferredSize(new Dimension(0, 40));
 
         this.panel_bottom.add(scroll_pane_hand);
-
-        // Update buttons
-        boolean visible = ((game.isActive()) && (!(game.getRank() == null || game.getState().equals(GameState.WILD))));
-        this.button_end.setVisible(visible);
 
         // Render
         this.revalidate();
@@ -144,6 +154,7 @@ public class GameFrame extends JFrame {
 
         label.setText(message);
         label.setFont(new Font("SansSerif", Font.PLAIN,42));
+        label.setOpaque(false);
         label.setVisible(false);
 
         this.panel_flash.removeAll();
@@ -160,12 +171,10 @@ public class GameFrame extends JFrame {
 
                 public void actionPerformed(ActionEvent e) {
                     if (count <= steps) {
-                        float intensity = (1.0f - (count++ / (float) steps));
-
-                        if (intensity >= 0.9f) return;
+                        float intensity = (count++ / (float) steps);
 
                         label.setVisible(true);
-                        label.setForeground(new Color(intensity, intensity, intensity));
+                        label.setForeground(new Color(0, 0, 0, intensity));
                     } else {
                         timer_in.stop();
                     }
@@ -177,11 +186,9 @@ public class GameFrame extends JFrame {
 
                 public void actionPerformed(ActionEvent e) {
                     if (count <= steps) {
-                        float intensity = (count++ / (float) steps);
+                        float intensity = (1.0f - count++ / (float) steps);
 
-                        if (intensity >= 0.9f) return;
-
-                        label.setForeground(new Color(intensity, intensity, intensity));
+                        label.setForeground(new Color(0, 0, 0, intensity));
                     } else {
                         timer_out.stop();
 

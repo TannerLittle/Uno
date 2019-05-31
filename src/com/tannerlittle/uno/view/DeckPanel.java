@@ -19,6 +19,8 @@ public class DeckPanel extends JPanel {
         this.client = client;
         this.game = game;
 
+        this.setOpaque(false);
+
         this.initialize();
     }
 

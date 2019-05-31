@@ -12,27 +12,40 @@ import java.awt.geom.AffineTransform;
 
 public class HiddenCardPanel extends JPanel {
 
-    private final Border border = BorderFactory.createEtchedBorder(WHEN_FOCUSED, Color.WHITE, Color.GRAY);
-    private final Border focused = BorderFactory.createEtchedBorder(WHEN_FOCUSED, Color.BLACK, Color.GRAY);
-
     private int width;
     private int height;
 
     private String text;
 
+    private final Border border;
+    private final Border focused;
+
     public HiddenCardPanel(int width, int height, String text, boolean borders) {
-        super();
+        this.border = BorderFactory.createEtchedBorder(WHEN_FOCUSED, Color.WHITE, Color.BLACK);
+        this.focused = BorderFactory.createEtchedBorder(WHEN_FOCUSED, Color.WHITE, Color.WHITE);
 
         this.width = width;
         this.height = height;
 
         this.text = text;
 
+        this.setOpaque(false);
         this.setPreferredSize(new Dimension(width, height));
 
         if (borders) {
             this.setBorder(border);
-            this.addMouseListener(new MouseHandler());
+
+            this.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseEntered(MouseEvent e) {
+                    HiddenCardPanel.this.setBorder(focused);
+                }
+
+                @Override
+                public void mouseExited(MouseEvent e) {
+                    HiddenCardPanel.this.setBorder(border);
+                }
+            });
         }
     }
 
@@ -55,6 +68,7 @@ public class HiddenCardPanel extends JPanel {
         g2.setTransform(org);
 
         g2.setColor(Color.WHITE);
+        g2.setStroke(new BasicStroke(4));
         g2.fillRect(0, 0, margin, height);
         g2.fillRect(width-margin, 0, margin, height);
 
@@ -75,15 +89,5 @@ public class HiddenCardPanel extends JPanel {
 
         g2.setPaint(Color.WHITE);
         layout.draw(g2, x, y);
-    }
-
-    class MouseHandler extends MouseAdapter {
-        public void mouseEntered(MouseEvent event) {
-            HiddenCardPanel.this.setBorder(focused);
-        }
-
-        public void mouseExited(MouseEvent event){
-            HiddenCardPanel.this.setBorder(border);
-        }
     }
 }

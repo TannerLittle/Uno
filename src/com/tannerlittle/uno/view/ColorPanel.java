@@ -22,6 +22,8 @@ public class ColorPanel extends JPanel {
         this.client = client;
         this.game = game;
 
+        this.setOpaque(false);
+
         for (Suit suit : Suit.values()) {
             if (suit.equals(Suit.WILD)) continue;
 

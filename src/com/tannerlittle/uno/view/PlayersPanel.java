@@ -7,9 +7,6 @@ import com.tannerlittle.uno.network.UnoClient;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,6 +21,8 @@ public class PlayersPanel extends JPanel {
         this.frame = frame;
         this.client = client;
         this.game = game;
+
+        this.setOpaque(false);
 
         this.initialize();
     }

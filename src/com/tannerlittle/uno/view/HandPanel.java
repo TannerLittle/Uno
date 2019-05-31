@@ -1,6 +1,7 @@
 package com.tannerlittle.uno.view;
 
 import com.tannerlittle.uno.UnoGame;
+import com.tannerlittle.uno.enums.GameState;
 import com.tannerlittle.uno.model.Card;
 import com.tannerlittle.uno.model.Hand;
 import com.tannerlittle.uno.model.Player;
@@ -21,11 +22,28 @@ public class HandPanel extends JPanel {
         this.client = client;
         this.game = game;
 
+        this.setOpaque(false);
+
         this.initialize();
     }
 
     private void initialize() {
         Hand hand = game.getPlayer().getHand();
+
+
+        boolean visible = ((game.isActive()) && (!(game.getRank() == null || game.getState().equals(GameState.WILD))));
+
+        HiddenCardPanel button = new HiddenCardPanel(100, 150, "End", true);
+
+        button.setVisible(visible);
+        button.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent event) {
+                HandPanel.this.client.sendCommand("ROTATE " + game.getPlayer().getUniqueId());
+            }
+        });
+
+        this.add(button);
 
         for (Card card : hand) {
             boolean faded = ((!((game.getRank() == null) || (card.getRank().equals(game.getRank())))) && game.isActive());

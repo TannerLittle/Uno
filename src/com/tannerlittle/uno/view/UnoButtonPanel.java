@@ -18,6 +18,8 @@ public class UnoButtonPanel extends JPanel {
     public UnoButtonPanel() {
         super();
 
+        this.setOpaque(false);
+
         this.color = Suit.RED.getColor();
 
         this.setPreferredSize(new Dimension(width, height));
