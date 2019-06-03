@@ -35,6 +35,7 @@ public class PlayersPanel extends JPanel {
         for (Player player : players) {
             JPanel panel = new JPanel();
             panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+            panel.setOpaque(false);
 
             HiddenCardPanel card = new HiddenCardPanel(50, 75, Integer.toString(player.getHand().size()), false);
 
