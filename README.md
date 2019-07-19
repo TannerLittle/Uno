@@ -1,12 +1,12 @@
 # Uno
-Computer Science Culminating Project
+ICS 4U Culminating Project
 
-**Feature Tracker:**
+**Features:**
 
-https://trello.com/b/AkNEmBbr/uno
+- Functional Uno Gameplay
+- Graphical Interfaces
+- Cross-Platform
+- Multiplayer over Network
 
-**Temporary Run Instructions:**
-- Open command prompt (start -> cmd)
-- Copy path to file
-- java -jar [path]/Uno.jar
-- enter
+![](https://i.imgur.com/qgSyfUF.png)
+![](https://i.imgur.com/IZ1Rnfp.png)
