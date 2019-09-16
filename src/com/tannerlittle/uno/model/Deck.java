@@ -32,13 +32,4 @@ public class Deck extends CardStack {
 
         Collections.shuffle(this);
     }
-
-    @Override
-    public void parse(String str) {
-        this.clear();
-
-        //TODO: Bad implementation, just uses the same deck multiple times over.
-        //TODO: In future, if deck runs out of cards, shuffle discard pile
-        for (int i = 0; i < 10; i++) super.parse(str);
-    }
 }

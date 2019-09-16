@@ -25,7 +25,7 @@ public class DeckPanel extends JPanel {
     }
 
     private void initialize() {
-        CardPanel panel_discards = new CardPanel(game.getDiscards().peek(), false);
+        CardPanel panel_discards = new CardPanel(game.getDiscard(), false);
 
         HiddenCardPanel panel_deck = new HiddenCardPanel(100, 150, "Uno", true);
         panel_deck.addMouseListener(new MouseAdapter() {

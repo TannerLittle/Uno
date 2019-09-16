@@ -9,8 +9,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
@@ -19,16 +17,12 @@ public class GameFrame extends JFrame {
     private UnoClient client;
     private UnoGame game;
 
-    private BackgroundPanel panel;
-
     private JPanel panel_top;
     private JPanel panel_center;
     private JPanel panel_bottom;
 
     private JPanel panel_players;
     private JPanel panel_flash;
-
-    private JPanel panel_button_uno;
 
     public GameFrame(UnoClient client, UnoGame game) throws HeadlessException {
         this.client = client;
@@ -43,54 +37,30 @@ public class GameFrame extends JFrame {
             ex.printStackTrace();
         }
 
-        this.panel = new BackgroundPanel(image, BackgroundPanel.TILED, 1.0f, 0.5f);
-        this.panel.setPaint(null);
+        BackgroundPanel panel = new BackgroundPanel(image, BackgroundPanel.TILED, 1.0f, 0.5f);
+        panel.setPaint(null);
         this.getContentPane().add(panel);
 
         // Initialize top panel
         this.panel_top = new JPanel(new BorderLayout());
         this.panel_top.setOpaque(false);
-        this.panel.add(panel_top, BorderLayout.NORTH);
+        panel.add(panel_top, BorderLayout.NORTH);
 
         // Initialize center panel
         this.panel_center = new JPanel();
         this.panel_center.setOpaque(false);
-        this.panel.add(panel_center, BorderLayout.CENTER);
+        panel.add(panel_center, BorderLayout.CENTER);
 
         // Initialize bottom panel
         this.panel_bottom = new JPanel();
         this.panel_bottom.setOpaque(false);
-        this.panel.add(panel_bottom, BorderLayout.SOUTH);
-
-        // Initialize 'Uno' button
-        this.panel_button_uno = new UnoButtonPanel();
-        this.panel_button_uno.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                GameFrame.this.client.sendCommand("UNO " + game.getPlayer().getUniqueId());
-            }
-        });
-
-        this.panel_button_uno.setVisible(false); // TODO: temporarily hide uno button
-
-        // Initialize buttons framework
-        JPanel panel_buttons = new JPanel();
-        panel_buttons.setLayout(new BoxLayout(panel_buttons, BoxLayout.Y_AXIS));
-
-        JPanel panel_buttons_right = new JPanel();
-        panel_buttons_right.setOpaque(false);
-        panel_buttons_right.setLayout(new FlowLayout(FlowLayout.RIGHT));
-        panel_buttons_right.add(panel_buttons);
-
-        panel_buttons.add(panel_button_uno, BorderLayout.EAST);
+        panel.add(panel_bottom, BorderLayout.SOUTH);
 
         // Initialize flash
         this.panel_flash = new JPanel();
         this.panel_flash.setOpaque(false);
         this.panel_flash.setPreferredSize(new Dimension(panel_flash.getWidth(), 62));
         this.panel_top.add(panel_flash, BorderLayout.SOUTH);
-
-        this.panel_top.add(panel_buttons_right, BorderLayout.EAST);
 
         // Initialize frame
         int width = 500;

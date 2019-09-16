@@ -5,7 +5,6 @@ import com.tannerlittle.uno.enums.GameState;
 import com.tannerlittle.uno.enums.Rank;
 import com.tannerlittle.uno.enums.Suit;
 import com.tannerlittle.uno.model.Card;
-import com.tannerlittle.uno.model.Discards;
 import com.tannerlittle.uno.model.Player;
 
 import java.net.Socket;
@@ -31,8 +30,8 @@ public class ServerListenerThread extends ListenerThread {
             this.game.getDeck().parse(content);
         }
 
-        if (command.equals("DISCARDS")) {
-            this.game.getDiscards().parse(content);
+        if (command.equals("DISCARD")) {
+            this.game.setDiscard(Card.parse(content));
         }
 
         if (command.equals("HAND")) {
@@ -113,9 +112,14 @@ public class ServerListenerThread extends ListenerThread {
             Player player = game.getPlayer(id);
 
             Card card = this.game.pickupCard(player);
-            if (card == null) return;
+            if ((card == null) && (game.getDeck().size() > 0)) return;
 
-            Card discard = game.getDiscards().peek();
+            if (game.getDeck().size() == 0) {
+                this.sendCommand("ROTATE " + player.getUniqueId());
+                return;
+            }
+
+            Card discard = game.getDiscard();
 
             if (!((card.isSimilar(discard)) || (card.getSuit().equals(Suit.WILD)))) {
                 this.sendCommand("ROTATE " + player.getUniqueId());

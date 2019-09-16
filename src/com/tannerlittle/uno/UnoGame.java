@@ -3,7 +3,6 @@ package com.tannerlittle.uno;
 import com.tannerlittle.uno.enums.*;
 import com.tannerlittle.uno.model.Card;
 import com.tannerlittle.uno.model.Deck;
-import com.tannerlittle.uno.model.Discards;
 import com.tannerlittle.uno.model.Player;
 import com.tannerlittle.uno.network.UnoClient;
 import com.tannerlittle.uno.view.GameFrame;
@@ -22,7 +21,7 @@ public class UnoGame {
     private Rotation rotation;
 
     private Deck deck;
-    private Discards discards;
+    private Card discard;
 
     private Rank rank;
 
@@ -39,7 +38,6 @@ public class UnoGame {
         this.rotation = Rotation.CLOCKWISE;
 
         this.deck = new Deck();
-        this.discards = new Discards();
 
         this.addPlayer(player);
     }
@@ -73,10 +71,6 @@ public class UnoGame {
         return deck;
     }
 
-    public Discards getDiscards() {
-        return discards;
-    }
-
     public Collection<Player> getPlayers() {
         return players.values();
     }
@@ -101,6 +95,14 @@ public class UnoGame {
         return players.get(id);
     }
 
+    public Card getDiscard() {
+        return discard;
+    }
+
+    public void setDiscard(Card card) {
+        this.discard = card;
+    }
+
     public Rank getRank() {
         return rank;
     }
@@ -121,7 +123,7 @@ public class UnoGame {
             return false;
         }
 
-        if ((state.equals(GameState.WILD)) && (!(card.isSimilar(discards.peek())))) {
+        if ((state.equals(GameState.WILD)) && (!(card.isSimilar(discard)))) {
             this.flash(id, Message.ERROR_WILD.getMessage());
             return false;
         }
@@ -139,7 +141,9 @@ public class UnoGame {
 
         player.getHand().removeElement(card);
 
-        this.discards.push(card);
+        this.deck.add(0, discard);
+        this.discard = card;
+
         this.rank = card.getRank();
 
         if (player.getHand().size() == 0) {
@@ -171,7 +175,7 @@ public class UnoGame {
             return false;
         }
 
-        this.discards.peek().setSuit(suit);
+        this.discard.setSuit(suit);
 
         this.state = GameState.RUNNING;
         return true;
@@ -190,7 +194,7 @@ public class UnoGame {
         }
 
         if (!(rank == null)) {
-            this.flash(id, "You cannot pick because you've already played!");
+            this.flash(id, "You cannot pickup because you've already played a card!");
             return null;
         }
 
@@ -199,6 +203,11 @@ public class UnoGame {
                 this.flash(id, "You cannot pickup because you can play a card!");
                 return null;
             }
+        }
+
+        if (deck.size() == 0) {
+            this.flash(id, "There are no more cards in the deck! Skipping your turn.");
+            return null;
         }
 
         Card card = deck.pop();
@@ -258,8 +267,6 @@ public class UnoGame {
     }
 
     private boolean checkCard(Card card) {
-        Card discard = discards.peek();
-
         if (card.getSuit() == Suit.WILD) return true;
         if (discard.getSuit() == Suit.WILD) return true;
 

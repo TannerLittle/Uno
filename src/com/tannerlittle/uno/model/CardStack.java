@@ -16,6 +16,8 @@ public class CardStack extends Stack<Card> {
     }
 
     public void parse(String str) {
+        this.clear();
+
         for (String card : str.split(", ")) {
             this.add(Card.parse(card));
         }

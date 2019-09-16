@@ -21,7 +21,7 @@ public class UnoServer {
     private List<ClientListenerThread> clients = new ArrayList<>();
 
     private Deck deck;
-    private Discards discards;
+    private Card discard;
 
     private Rotation rotation;
 
@@ -77,7 +77,6 @@ public class UnoServer {
 
     public void start() {
         this.deck = new Deck();
-        this.discards = new Discards();
 
         this.rotation = Rotation.CLOCKWISE;
 
@@ -91,15 +90,14 @@ public class UnoServer {
         }
 
         Card card = deck.pop();
-        this.discards.push(card);
+        this.discard = card;
 
-        //TODO:
-        // Temporarily set order to alphabetical in order to match PlayerPanel client-side.
+        // Set order to alphabetical in order to match PlayerPanel client-side.
         this.players = players.stream().sorted(Comparator.comparing(Player::getName)).collect(Collectors.toList());
 
         // Sync each client with the server
         this.broadcastCommand("DECK " + deck.toString());
-        this.broadcastCommand("DISCARDS " + discards.toString());
+        this.broadcastCommand("DISCARD " + discard.toString());
 
         for (Player player : players) {
             Hand hand = player.getHand();
@@ -107,14 +105,6 @@ public class UnoServer {
         }
 
         this.rotate();
-    }
-
-    public Deck getDeck() {
-        return deck;
-    }
-
-    public Discards getDiscards() {
-        return discards;
     }
 
     public List<Player> getPlayers() {
