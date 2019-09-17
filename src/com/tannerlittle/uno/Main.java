@@ -63,6 +63,21 @@ public class Main {
             System.out.println("Unable to establish a socket connection.");
             System.exit(0);
         }
+
+        do {
+            Scanner scanner = new Scanner(System.in);
+            scanner.next();
+
+            if (server.getPlayers().size() == 0) {
+                System.out.println("There are no players connected.");
+                continue;
+            }
+
+            this.server.start();
+            this.server.broadcastCommand("START");
+
+            return;
+        } while (true);
     }
 
     public static void main(String[] args) {
