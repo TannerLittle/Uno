@@ -72,8 +72,6 @@ public class JoinPanel extends BackgroundPanel {
                 UnoClient client = new UnoClient(main.getGame(), address, port);
                 client.sendCommand(main.getGame().getPlayer().getCommand());
 
-                this.main.setClient(client);
-
                 this.removeAll();
                 this.add(new JLabel("Connected. Wait for the host to start the game."));
 

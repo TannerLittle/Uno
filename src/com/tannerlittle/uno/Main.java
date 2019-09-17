@@ -1,6 +1,5 @@
 package com.tannerlittle.uno;
 
-import com.tannerlittle.uno.network.UnoClient;
 import com.tannerlittle.uno.network.UnoServer;
 import com.tannerlittle.uno.view.menu.MenuFrame;
 
@@ -12,9 +11,7 @@ import java.util.Scanner;
 public class Main {
 
     private UnoGame game;
-
     private UnoServer server;
-    private UnoClient client;
 
     public Main(String[] args) {
         if (args.length == 0) {
@@ -64,19 +61,27 @@ public class Main {
             System.exit(0);
         }
 
+        System.out.println("UNO Server initialized.");
+        System.out.println("Copyright © Tanner Little 2019 - All rights reserved.");
+        Scanner scanner = new Scanner(System.in);
+
         do {
-            Scanner scanner = new Scanner(System.in);
-            scanner.next();
+            String command = scanner.nextLine();
 
-            if (server.getPlayers().size() == 0) {
-                System.out.println("There are no players connected.");
-                continue;
+            if (command.equalsIgnoreCase("start")) {
+                if (server.getPlayers().size() == 0) {
+                    System.out.println("There are no players connected.");
+                    continue;
+                }
+
+                System.out.println("Starting game.");
+
+                this.server.start();
+                this.server.broadcastCommand("START");
+            } else {
+                System.out.println("Broadcasting command.");
+                this.server.broadcastCommand(command);
             }
-
-            this.server.start();
-            this.server.broadcastCommand("START");
-
-            return;
         } while (true);
     }
 
@@ -94,9 +99,5 @@ public class Main {
 
     public void setServer(UnoServer server) {
         this.server = server;
-    }
-
-    public void setClient(UnoClient client) {
-        this.client = client;
     }
 }

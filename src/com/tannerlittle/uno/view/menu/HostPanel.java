@@ -102,8 +102,6 @@ public class HostPanel extends BackgroundPanel {
 
             this.client = new UnoClient(main.getGame(), address, port);
             this.client.sendCommand(main.getGame().getPlayer().getCommand());
-
-            this.main.setClient(client);
         } catch (IOException ex) {
             ex.printStackTrace();
         }

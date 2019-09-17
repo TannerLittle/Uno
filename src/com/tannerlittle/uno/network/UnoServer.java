@@ -89,8 +89,7 @@ public class UnoServer {
             }
         }
 
-        Card card = deck.pop();
-        this.discard = card;
+        this.discard = deck.pop();
 
         // Set order to alphabetical in order to match PlayerPanel client-side.
         this.players = players.stream().sorted(Comparator.comparing(Player::getName)).collect(Collectors.toList());
