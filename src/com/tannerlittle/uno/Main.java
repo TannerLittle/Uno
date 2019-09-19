@@ -7,6 +7,7 @@ import javax.swing.*;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.util.Scanner;
+import java.util.UUID;
 
 public class Main {
 
@@ -78,6 +79,10 @@ public class Main {
 
                 this.server.start();
                 this.server.broadcastCommand("START");
+            } else if (command.equalsIgnoreCase("bot")) {
+                UUID id = UUID.randomUUID();
+                UnoPlayerBot bot = new UnoPlayerBot(server, id);
+                server.getBots().put(id, bot);
             } else {
                 System.out.println("Broadcasting command.");
                 this.server.broadcastCommand(command);

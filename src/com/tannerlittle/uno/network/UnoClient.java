@@ -18,8 +18,10 @@ public class UnoClient {
     public UnoClient(UnoGame game, InetAddress address, int port) throws IOException {
         this.socket = new Socket(address, port);
 
-        this.thread = new ServerListenerThread(socket, this, game);
+        this.thread = new ServerListenerThread(socket, game);
         this.thread.start();
+
+        game.setClient(this);
     }
 
     public void sendCommand(String command) {

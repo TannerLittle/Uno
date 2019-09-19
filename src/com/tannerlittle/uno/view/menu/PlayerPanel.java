@@ -46,7 +46,7 @@ public class PlayerPanel extends BackgroundPanel {
             String name = field.getText();
 
             Player player = new Player(UUID.randomUUID(), name);
-            UnoGame game = new UnoGame(player);
+            UnoGame game = new UnoGame(player, false);
 
             this.main.setGame(game);
 
@@ -60,7 +60,7 @@ public class PlayerPanel extends BackgroundPanel {
             String name = field.getText();
 
             Player player = new Player(UUID.randomUUID(), name);
-            UnoGame game = new UnoGame(player);
+            UnoGame game = new UnoGame(player, false);
 
             this.main.setGame(game);
 

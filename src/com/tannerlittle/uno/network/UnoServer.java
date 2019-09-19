@@ -33,11 +33,6 @@ public class UnoServer {
     public UnoServer(InetAddress address, int port) throws IOException {
         this.server = new ServerSocket(port, 1, address);
 
-        // TODO: Temporarily add bots automatically for testing
-        UUID id = UUID.randomUUID();
-        UnoPlayerBot bot = new UnoPlayerBot(this, id);
-        this.bots.put(id, bot);
-
         this.thread = new Thread(() -> {
             while (true) {
                 Socket socket = null;
@@ -117,6 +112,10 @@ public class UnoServer {
         return players;
     }
 
+    public Map<UUID, UnoPlayerBot> getBots() {
+        return bots;
+    }
+
     public int next() {
         return (rotation.equals(Rotation.CLOCKWISE)
                 ? (active == players.size() - 1 ? 0 : active + 1)
@@ -136,8 +135,7 @@ public class UnoServer {
         this.broadcastCommand("ACTIVE " + player.getUniqueId());
 
         if (bots.containsKey(player.getUniqueId())) {
-            UnoPlayerBot bot = bots.get(player.getUniqueId());
-
+            this.bots.get(player.getUniqueId()).play();
         }
     }
 

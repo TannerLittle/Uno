@@ -15,13 +15,11 @@ import java.util.UUID;
 
 public class ServerListenerThread extends ListenerThread {
 
-    private UnoClient client;
     private UnoGame game;
 
-    public ServerListenerThread(Socket socket, UnoClient client, UnoGame game) {
+    public ServerListenerThread(Socket socket, UnoGame game) {
         super(socket);
 
-        this.client = client;
         this.game = game;
     }
 
@@ -43,7 +41,7 @@ public class ServerListenerThread extends ListenerThread {
         }
 
         if (command.equals("START")) {
-            this.game.start(client);
+            this.game.start();
         }
 
         if (command.equals("PLAYER")) {
@@ -162,7 +160,7 @@ public class ServerListenerThread extends ListenerThread {
             String[] args = content.split("\\s+");
 
             if (args[0].equals("ALL") || game.isPlayer(UUID.fromString(args[0]))) {
-                game.getFrame().flash(content.substring(args[0].length() + 1));
+                if (!(game.getFrame() == null)) game.getFrame().flash(content.substring(args[0].length() + 1));
             }
         }
 

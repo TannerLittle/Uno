@@ -12,6 +12,7 @@ import java.util.*;
 public class UnoGame {
 
     private UUID player;
+    private boolean headless;
 
     private GameState state;
 
@@ -26,9 +27,11 @@ public class UnoGame {
     private Rank rank;
 
     private GameFrame frame;
+    private UnoClient client;
 
-    public UnoGame(Player player) {
+    public UnoGame(Player player, boolean headless) {
         this.player = player.getUniqueId();
+        this.headless = headless;
 
         this.state = GameState.SETUP;
 
@@ -48,9 +51,12 @@ public class UnoGame {
         this.players.put(player.getUniqueId(), player);
     }
 
-    public void start(UnoClient client) {
+    public void start() {
         this.state = GameState.RUNNING;
-        this.frame = new GameFrame(client, this);
+
+        if (!(client == null || headless)) {
+            this.frame = new GameFrame(client, this);
+        }
     }
 
     public Player getPlayer() {
@@ -277,8 +283,14 @@ public class UnoGame {
     }
 
     private void flash(UUID id, String message) {
+        if (frame == null) return;
+
         if (isPlayer(id)) {
             this.frame.flash(message);
         }
+    }
+
+    public void setClient(UnoClient client) {
+        this.client = client;
     }
 }
