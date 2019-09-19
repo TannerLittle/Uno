@@ -1,5 +1,6 @@
 package com.tannerlittle.uno.network;
 
+import com.tannerlittle.uno.UnoPlayerBot;
 import com.tannerlittle.uno.enums.Rotation;
 import com.tannerlittle.uno.model.*;
 
@@ -19,6 +20,7 @@ public class UnoServer {
     private Thread thread;
 
     private List<ClientListenerThread> clients = new ArrayList<>();
+    private Map<UUID, UnoPlayerBot> bots = new HashMap<>();
 
     private Deck deck;
     private Card discard;
@@ -30,6 +32,11 @@ public class UnoServer {
 
     public UnoServer(InetAddress address, int port) throws IOException {
         this.server = new ServerSocket(port, 1, address);
+
+        // TODO: Temporarily add bots automatically for testing
+        UUID id = UUID.randomUUID();
+        UnoPlayerBot bot = new UnoPlayerBot(this, id);
+        this.bots.put(id, bot);
 
         this.thread = new Thread(() -> {
             while (true) {
@@ -127,6 +134,11 @@ public class UnoServer {
 
         Player player = players.get(active);
         this.broadcastCommand("ACTIVE " + player.getUniqueId());
+
+        if (bots.containsKey(player.getUniqueId())) {
+            UnoPlayerBot bot = bots.get(player.getUniqueId());
+
+        }
     }
 
     public void skip(UUID id) {
