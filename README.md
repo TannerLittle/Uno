@@ -2,10 +2,9 @@
 
 **Features:**
 
-- Functional Uno Gameplay
+- Cross-Platform Multiplayer (unlimited players)
 - Graphical User Interfaces
-- Multiplayer over Local Area Network
-- Cross-Platform
+- Functional Gameplay
 
 ![](https://i.imgur.com/qgSyfUF.png)
 ![](https://i.imgur.com/IZ1Rnfp.png)
